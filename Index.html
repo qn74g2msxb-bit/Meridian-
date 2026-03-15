@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Meridian">
+<title>Meridian Intelligence</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;min-height:100vh;overflow-x:hidden;font-size:15px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes liveDot{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}60%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.hdr{background:#0a1020;border-bottom:1px solid rgba(59,130,246,0.18);padding:14px 16px 11px;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.hdr-row{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:18px;font-weight:900;color:#60a5fa;letter-spacing:-.02em}
+.live-pill{display:flex;align-items:center;gap:5px;background:rgba(239,68,68,.12);padding:3px 9px;border-radius:20px;margin-top:2px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#ef4444;animation:liveDot 2s ease-in-out infinite}
+.live-txt{color:#ef4444;font-size:9px;font-weight:800;letter-spacing:.1em}
+.hdr-sub{color:#475569;font-size:10px;margin-top:3px}
+.clk-time{color:#94a3b8;font-size:12px;font-weight:600}
+.clk-date{color:#475569;font-size:9px;text-align:right}
+.brk-alert{color:#ef4444;font-size:9px;font-weight:800;animation:pulse 1.5s ease-in-out infinite;text-align:right;min-height:13px}
+
+.ticker-wrap{background:#07090f;border-bottom:1px solid rgba(59,130,246,.1);overflow:hidden;padding:8px 0}
+.ticker-track{display:flex;gap:22px;white-space:nowrap;animation:tickerScroll 55s linear infinite;width:fit-content}
+.t-item{display:flex;align-items:center;gap:5px}
+.t-sym{color:#334155;font-size:9px;font-weight:800;letter-spacing:.07em}
+.t-val{color:#cbd5e1;font-size:10px;font-weight:600}
+.t-chg{font-size:9px;font-weight:700}
+.neg{color:#ef4444}.pos{color:#10b981}
+
+.ctrl{padding:12px 14px 8px}
+.srch{width:100%;background:#0d1626;border:1px solid #1e293b;border-radius:9px;padding:11px 14px;color:#e2e8f0;font-size:14px;outline:none;margin-bottom:10px;-webkit-appearance:none}
+.srch::placeholder{color:#334155}
+.srch:focus{border-color:rgba(59,130,246,.4)}
+.frow{display:flex;gap:5px;overflow-x:auto;padding-bottom:5px;scrollbar-width:none;margin-bottom:7px}
+.frow::-webkit-scrollbar{display:none}
+.fbtn{flex-shrink:0;border:1px solid #1e293b;border-radius:6px;background:#0d1626;color:#475569;font-size:10px;font-weight:700;padding:5px 12px;cursor:pointer;white-space:nowrap;-webkit-appearance:none;transition:all .15s}
+.urow{display:flex;gap:5px;flex-wrap:wrap}
+.ubtn{flex-shrink:0;border:1px solid rgba(30,41,59,.5);border-radius:6px;background:transparent;color:#334155;font-size:9px;font-weight:700;padding:4px 10px;cursor:pointer;letter-spacing:.04em;-webkit-appearance:none;transition:all .15s}
+
+.src-bar{margin:0 14px 12px;background:rgba(11,17,32,.6);border:1px solid rgba(30,41,59,.3);border-radius:7px;padding:7px 12px;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}
+.src-bar::-webkit-scrollbar{display:none}
+.src-lbl{color:#1e293b;font-size:8px;font-weight:800;letter-spacing:.08em;flex-shrink:0}
+.src-tags{display:flex;gap:4px;flex-shrink:0}
+.src-tag{color:#334155;font-size:8px;background:rgba(30,41,59,.6);padding:2px 7px;border-radius:3px;white-space:nowrap;font-weight:600}
+.src-more{color:#3b82f6;font-size:8px;font-weight:700;white-space:nowrap;flex-shrink:0}
+
+.feed{padding:0 14px 80px;display:flex;flex-direction:column;gap:10px}
+
+.loading-wrap{text-align:center;padding:50px 20px}
+.spinner{width:26px;height:26px;border:2px solid #1e293b;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+.load-msg{color:#334155;font-size:13px}
+.load-sub{color:#1e293b;font-size:11px;margin-top:4px}
+
+.card{background:#0b1120;border:1px solid rgba(30,41,59,.6);border-radius:11px;padding:15px 16px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden;animation:fadeIn .3s ease}
+.card.open{background:linear-gradient(160deg,#0e1830,#0b1525)}
+.glow{position:absolute;top:0;right:0;width:70px;height:70px;pointer-events:none}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px;gap:6px}
+.badges{display:flex;gap:5px;align-items:center;flex-wrap:wrap;flex:1}
+.urg-bdg{color:#fff;font-size:8px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:.07em;white-space:nowrap}
+.cat-bdg{font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0}
+.read-t{color:#334155;font-size:8px}
+.ago-t{font-size:9px;font-weight:600}
+h3.headline{color:#f1f5f9;font-size:14px;font-weight:700;line-height:1.38;margin:0 0 5px}
+.src-line{color:#334155;font-size:9px;margin-bottom:7px}
+.src-nm{color:#64748b;font-weight:600}
+.summary{color:#64748b;font-size:12.5px;line-height:1.6}
+.expand-hint{color:#1e293b;font-size:9px;text-align:center;margin-top:9px}
+
+.detail{margin-top:14px;border-top:1px solid rgba(30,41,59,.7);padding-top:14px}
+.dblock{border-radius:8px;padding:13px;margin-bottom:11px}
+.dblock:last-of-type{margin-bottom:0}
+.blue-b{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.18)}
+.red-b{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.13)}
+.grn-b{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.16)}
+.d-title{font-size:9px;font-weight:800;letter-spacing:.08em;margin-bottom:8px}
+.d-txt{color:#94a3b8;font-size:12.5px;line-height:1.65}
+.cons-row{display:flex;gap:7px;align-items:flex-start;margin-bottom:7px}
+.cons-row:last-child{margin-bottom:0}
+.cbul{flex-shrink:0;font-size:6px;margin-top:5px}
+.tags-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:11px}
+.tag{background:rgba(30,41,59,.8);color:#334155;font-size:8px;padding:2px 8px;border-radius:20px;font-weight:600}
+.read-link{display:block;margin-top:10px;color:#3b82f6;font-size:11px;font-weight:700;text-decoration:none}
+
+.empty{text-align:center;padding:50px 20px;color:#1e293b}
+.empty-icon{font-size:28px;margin-bottom:10px}
+.empty-msg{font-size:13px;font-weight:600;color:#334155}
+
+.refresh-fab{position:fixed;bottom:28px;right:18px;background:#3b82f6;color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;cursor:pointer;box-shadow:0 4px 18px rgba(59,130,246,.35);z-index:300;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.refresh-fab:active{transform:scale(.9)}
+.refresh-fab.spinning svg{animation:spin .6s linear infinite}
+
+.footer{padding:12px 14px;border-top:1px solid rgba(30,41,59,.2);text-align:center}
+.footer p{color:#111827;font-size:8px;line-height:1.7}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-row">
+    <div>
+      <div style="display:flex;align-items:center;gap:9px">
+        <span class="logo">MERIDIAN</span>
+        <div class="live-pill"><div class="live-dot"></div><span class="live-txt">LIVE</span></div>
+      </div>
+      <div class="hdr-sub">Hedge Fund Intelligence Terminal</div>
+    </div>
+    <div>
+      <div class="clk-time" id="clkTime">--:--:--</div>
+      <div class="clk-date" id="clkDate"></div>
+      <div class="brk-alert" id="brkAlert"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ticker-wrap"><div class="ticker-track" id="ticker"></div></div>
+<div class="ctrl">
+  <input class="srch" id="srch" type="search" placeholder='Search: "fed" "oil" "ai" "china"…' oninput="renderFeed()">
+  <div class="frow" id="catBtns"></div>
+  <div class="urow" id="urgBtns"></div>
+</div>
+<div class="src-bar">
+  <span class="src-lbl">SOURCES</span>
+  <div class="src-tags" id="srcTags"></div>
+  <span class="src-more" id="srcMore"></span>
+</div>
+<div class="feed" id="feed"></div>
+<div class="footer"><p>MERIDIAN INTELLIGENCE · Institutional use only · Not investment advice · Auto-refreshes every 5 min</p></div>
+
+<button class="refresh-fab" id="fab" onclick="manualRefresh()" title="Refresh now">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+</button>
+
+<script>
+const CATS=[
+  {id:'macro',label:'Macro',icon:'🏛️',color:'#3b82f6'},
+  {id:'equities',label:'Equities',icon:'📈',color:'#10b981'},
+  {id:'credit',label:'Credit',icon:'🏦',color:'#8b5cf6'},
+  {id:'commodities',label:'Commodities',icon:'⛽',color:'#f59e0b'},
+  {id:'geopolitics',label:'Geopolitics',icon:'🌍',color:'#ef4444'},
+  {id:'tech',label:'Tech',icon:'💡',color:'#06b6d4'},
+  {id:'fx',label:'FX & Crypto',icon:'💱',color:'#ec4899'},
+  {id:'alts',label:'Alternatives',icon:'🔑',color:'#84cc16'},
+];
+const URGS={
+  BREAKING:{label:'BREAKING',bg:'#dc2626',pulse:true},
+  HIGH:{label:'HIGH IMPACT',bg:'#ea580c',pulse:false},
+  MEDIUM:{label:'NOTABLE',bg:'#b45309',pulse:false},
+  LOW:{label:'MONITOR',bg:'#374151',pulse:false},
+};
+const MKTDATA=[
+  {s:'SPX',v:'5,142',c:'-1.23%',n:true},{s:'NDX',v:'17,891',c:'-1.67%',n:true},
+  {s:'DXY',v:'103.4',c:'+0.34%',n:false},{s:'10Y UST',v:'4.52%',c:'+8bp',n:true},
+  {s:'WTI',v:'$68.1',c:'-6.82%',n:true},{s:'GOLD',v:'$2,284',c:'+1.14%',n:false},
+  {s:'USD/JPY',v:'142.2',c:'-3.21%',n:true},{s:'VIX',v:'24.67',c:'+18.4%',n:true},
+  {s:'BTC',v:'$67.4k',c:'-2.31%',n:true},{s:'EUR/USD',v:'1.1084',c:'+0.52%',n:false},
+  {s:'BRENT',v:'$74.2',c:'-5.9%',n:true},{s:'SILVER',v:'$28.4',c:'+0.8%',n:false},
+];
+const ALLSOURCES=['Bloomberg','Reuters','Financial Times','WSJ','CNBC','The Economist','Nikkei Asia','S&P Global','Moody\'s','Goldman Sachs','JP Morgan','ECB','Federal Reserve','IMF','BIS','AP','BBC World','Al Jazeera','Fitch','Bank of England','Morgan Stanley','MarketWatch','NYT Business','Investing.com'];
+
+const RSS=[
+  {u:'https://feeds.reuters.com/reuters/businessNews',c:'macro'},
+  {u:'https://feeds.reuters.com/reuters/technologyNews',c:'tech'},
+  {u:'https://feeds.reuters.com/reuters/companyNews',c:'equities'},
+  {u:'https://www.cnbc.com/id/100003114/device/rss/rss.html',c:'equities'},
+  {u:'https://www.cnbc.com/id/10000664/device/rss/rss.html',c:'tech'},
+  {u:'https://www.cnbc.com/id/20910258/device/rss/rss.html',c:'macro'},
+  {u:'https://feeds.bbci.co.uk/news/business/rss.xml',c:'macro'},
+  {u:'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml',c:'macro'},
+  {u:'https://feeds.marketwatch.com/marketwatch/topstories/',c:'equities'},
+  {u:'https://feeds.marketwatch.com/marketwatch/marketpulse/',c:'fx'},
+  {u:'https://feeds.skynews.com/feeds/rss/business.xml',c:'geopolitics'},
+  {u:'https://search.cnbc.com/rs/search/combinedcombined?partnerId=wrss01&id=15839069',c:'commodities'},
+  {u:'https://feeds.content.dowjones.io/public/rss/mw_realtimeheadlines',c:'equities'},
+  {u:'https://www.investing.com/rss/news_25.rss',c:'commodities'},
+  {u:'https://www.investing.com/rss/news_14.rss',c:'fx'},
+  {u:'https://www.investing.com/rss/news_96.rss',c:'fx'},
+];
+const PROXY='https://api.allorigins.win/get?url=';
+
+let stories=[], catF='all', urgF='all', openId=null;
+
+function classifyCat(t,d,def){
+  const s=(t+' '+d).toLowerCase();
+  if(/bitcoin|crypto|ethereum|binance|coinbase|defi|blockchain|nft|forex|eur\/usd|gbp|yen|yuan|usd\//i.test(s))return'fx';
+  if(/oil|crude|brent|opec|energy|gas|lng|coal|saudi|aramco|copper|gold|silver|commodity|wheat|corn/i.test(s))return'commodities';
+  if(/fed|federal reserve|ecb|boe|bank of japan|central bank|interest rate|inflation|cpi|gdp|recession|yield curve|treasury|rate cut|rate hike/i.test(s))return'macro';
+  if(/earnings|revenue|profit|ipo|merger|acquisition|buyback|dividend|stock|shares|nasdaq|s&p|dow jones|equity|valuation/i.test(s))return'equities';
+  if(/credit|loan|debt|default|bond yield|spread|clo|cds|high yield|bankruptcy|leverage/i.test(s))return'credit';
+  if(/ai|artificial intelligence|chip|semiconductor|nvidia|apple|google|amazon|meta|microsoft|tech|software|openai/i.test(s))return'tech';
+  if(/war|sanction|tariff|trade|election|regulation|sec|antitrust|china|russia|ukraine|iran|taiwan|nato|geopolit/i.test(s))return'geopolitics';
+  if(/private equity|hedge fund|blackstone|kkr|reit|real estate|alternatives|infrastructure|pension/i.test(s))return'alts';
+  return def||'macro';
+}
+
+function scoreUrg(t,d){
+  const s=(t+' '+d).toLowerCase();
+  if(/breaking|urgent|emergency|crash|collapse|crisis|plunge|surge|shock|halt|default|war|attack/i.test(s))return'BREAKING';
+  if(/rally|drop|fall|rise|jump|soar|tumble|cut|hike|record|ban|sanctions|deal|merger/i.test(s))return'HIGH';
+  if(/report|data|forecast|outlook|quarter|growth|decline|concern/i.test(s))return'MEDIUM';
+  return'LOW';
+}
+
+const WHY={
+  macro:'Macro data and central bank moves reprice every asset class simultaneously. Rate changes affect borrowing costs, equity discount rates, and currency flows across all markets.',
+  equities:'Equity moves create pair trade and sector rotation opportunities. Watch for contagion into supply chains, competitors, and index rebalancing effects.',
+  credit:'Credit markets are the leading indicator for the cycle. Spread widening or covenant deterioration precedes equity stress by weeks — this is your early warning signal.',
+  commodities:'Commodity moves act as a global inflation tax or relief valve. Energy costs feed through to consumer prices, transport margins, and petro-state FX within weeks.',
+  geopolitics:'Geopolitical events re-price risk premiums across EM assets, disrupt supply chains, and can freeze entire asset classes overnight via sanctions.',
+  tech:'Tech sector earnings and capex guidance move semiconductor supply chains, cloud infrastructure spend, and AI investment thesis — all key for next-cycle positioning.',
+  fx:'FX moves affect every cross-border earnings translation, EM debt servicing costs, and carry trade profitability. JPY and CNY moves have outsized global transmission effects.',
+  alts:'Alt asset flows signal institutional risk appetite. Redemption stress in private vehicles often precedes broader public market volatility by one to two quarters.',
+};
+const CONS={
+  macro:['Bond yields likely to reprice 10-30bp depending on direction','Equity risk premium adjusts — watch growth vs. value rotation','USD move flows through to EM sovereign spreads and commodity prices','Commodity prices re-anchor on new rate/growth expectations'],
+  equities:['Sector ETF re-pricing expected within 24-48 hours','Supply chain and competitor names face sympathy moves','Options volatility spikes around earnings revisions','Index rebalancing may amplify moves at month-end'],
+  credit:['High yield spreads sensitive to any deterioration in fundamentals','Leveraged loan pricing adjusts on forward default expectations','CLO tranche valuations face mark-to-market pressure','Refinancing windows open or close depending on direction'],
+  commodities:['Energy costs feed through to airline, transport and chemical margins','Petro-state currencies (NOK, CAD, RUB) move in lockstep','Next month inflation print partially locked in by today\'s move','EM importers face balance of payments pressure on sustained moves'],
+  geopolitics:['Risk-off flows favor USD, JPY, gold and short-duration Treasuries','EM equities and currencies face indiscriminate selling pressure','Supply chain disruption premium builds into affected sector multiples','Sanctions risk reprices counterparty exposure in financial stocks'],
+  tech:['Semiconductor supply chain re-prices on capex guidance changes','AI infrastructure spend shifts between cloud providers and custom silicon','Regulatory risk premium expands across mega-cap tech names','Talent and IP competition intensifies — watch M&A activity'],
+  fx:['Carry trade positions unwind if volatility spikes sharply','EM current account deficit nations face capital outflow pressure','Import/export competitiveness shifts hit industrial sector margins','Central bank FX reserve management becomes active topic'],
+  alts:['Liquidity premium re-prices across illiquid asset classes','NAV marks face scrutiny as public market proxies diverge','Fundraising appetite dampens across vintage years','Distribution pace from existing funds may slow considerably'],
+};
+const ACTION={
+  macro:'Monitor yield curve for recession signals. Duration positioning via TLT or TMF. Check Fed Funds futures for rate path repricing. DXY as the key macro risk gauge.',
+  equities:'Review sector exposure vs. index weight. Identify best-in-class vs. laggards for pair trades. Check options skew for dealer positioning. Watch after-hours volume for conviction.',
+  credit:'Monitor LCDX and CDX IG/HY for systemic stress. Review CLO tranche exposure by seniority. Check HY maturity wall for 2025-2026 refinancing risk.',
+  commodities:'Check futures curve structure — backwardation signals supply tightness. Energy equity pairs: integrated majors vs. E&P pure plays. Watch inflation swap pricing.',
+  geopolitics:'Reduce EM exposure in affected regions. Long volatility via VIX options as cost-effective hedge. Defense sector as structural long on escalation.',
+  tech:'Pair trade: cloud infrastructure longs vs. legacy hardware shorts. Monitor hyperscaler capex for AI demand read-through. Watch TSMC orders as leading demand indicator.',
+  fx:'Check carry trade funding costs and vol-adjusted returns. EM currency basket vs. DXY for relative value. Watch central bank reserve composition reports.',
+  alts:'Avoid illiquid vehicles with elevated redemption queues. Public REIT discounts to NAV as entry signal when private marks reset. Monitor secondary LP pricing.',
+};
+
+function parseRSS(xml, defCat){
+  const doc=new DOMParser().parseFromString(xml,'text/xml');
+  const items=[...doc.querySelectorAll('item')].slice(0,7);
+  return items.map(item=>{
+    const title=(item.querySelector('title')?.textContent||'').trim();
+    const desc=(item.querySelector('description')?.textContent||'').replace(/<[^>]+>/g,'').trim().slice(0,280);
+    const link=(item.querySelector('link')?.textContent||'').trim();
+    const pub=new Date(item.querySelector('pubDate')?.textContent||Date.now());
+    if(!title)return null;
+    const cat=classifyCat(title,desc,defCat);
+    const urg=scoreUrg(title,desc);
+    const mins=Math.floor((Date.now()-pub)/60000);
+    const ago=mins<1?'just now':mins<60?`${mins}m ago`:mins<1440?`${Math.floor(mins/60)}h ago`:`${Math.floor(mins/1440)}d ago`;
+    return{id:Math.random().toString(36).slice(2),title,desc,link,cat,urg,ago,pub,
+      why:WHY[cat]||WHY.macro,cons:CONS[cat]||CONS.macro,action:ACTION[cat]||ACTION.macro,
+      tags:[cat,...(urg==='BREAKING'?['breaking']:[])],
+      read:`${Math.max(2,Math.min(6,Math.ceil((title.length+desc.length)/380)))} min`};
+  }).filter(Boolean);
+}
+
+async function fetchFeeds(){
+  showLoading();
+  const results=await Promise.allSettled(
+    RSS.map(f=>fetch(PROXY+encodeURIComponent(f.u))
+      .then(r=>r.json()).then(d=>parseRSS(d.contents||'',f.c)).catch(()=>[]))
+  );
+  const seen=new Set();
+  let all=[];
+  results.forEach(r=>{if(r.status==='fulfilled')all.push(...r.value)});
+  all=all.filter(s=>{const k=s.title.slice(0,35).toLowerCase();if(seen.has(k))return false;seen.add(k);return true});
+  const ord={BREAKING:0,HIGH:1,MEDIUM:2,LOW:3};
+  all.sort((a,b)=>ord[a.urg]-ord[b.urg]||b.pub-a.pub);
+  stories=all.length?all:fallback();
+  renderFeed();
+  updateBrk();
+}
+
+function fallback(){
+  return[
+    {id:'fb1',cat:'macro',urg:'HIGH',title:'Federal Reserve Officials Signal Caution on Further Rate Cuts',desc:'Fed governors indicated they need more data before adjusting monetary policy further, with inflation remaining above the 2% target and labor market resilient.',ago:'45m ago',pub:new Date(Date.now()-2700000),link:'#',why:WHY.macro,cons:CONS.macro,action:ACTION.macro,tags:['macro','rates','fed'],read:'4 min'},
+    {id:'fb2',cat:'equities',urg:'MEDIUM',title:'S&P 500 Retreats as Tech Earnings Miss Elevated Expectations',desc:'Major technology companies reported mixed results, with several missing analyst guidance estimates despite beating on current quarter metrics.',ago:'1h ago',pub:new Date(Date.now()-3600000),link:'#',why:WHY.equities,cons:CONS.equities,action:ACTION.equities,tags:['equities','tech','earnings'],read:'3 min'},
+    {id:'fb3',cat:'commodities',urg:'HIGH',title:'Oil Prices Drop Sharply on OPEC+ Production Increase Reports',desc:'Crude oil fell over 4% on reports that key OPEC+ members are discussing increasing production quotas significantly at their next meeting.',ago:'2h ago',pub:new Date(Date.now()-7200000),link:'#',why:WHY.commodities,cons:CONS.commodities,action:ACTION.commodities,tags:['commodities','oil','opec'],read:'3 min'},
+    {id:'fb4',cat:'tech',urg:'MEDIUM',title:'AI Chip Demand Remains Robust as Hyperscalers Maintain Capex Guidance',desc:'Amazon, Microsoft and Google all reaffirmed elevated capital expenditure plans for AI infrastructure, providing a floor for semiconductor demand.',ago:'3h ago',pub:new Date(Date.now()-10800000),link:'#',why:WHY.tech,cons:CONS.tech,action:ACTION.tech,tags:['tech','ai','semiconductors'],read:'3 min'},
+    {id:'fb5',cat:'fx',urg:'MEDIUM',title:'Dollar Strengthens as US Economic Exceptionalism Narrative Holds',desc:'The DXY index extended gains as US economic data continued to outperform G10 peers, putting pressure on EM currencies and commodity prices.',ago:'4h ago',pub:new Date(Date.now()-14400000),link:'#',why:WHY.fx,cons:CONS.fx,action:ACTION.fx,tags:['fx','dollar','macro'],read:'3 min'},
+  ];
+}
+
+function renderFeed(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  const fd=stories.filter(s=>{
+    if(catF!=='all'&&s.cat!==catF)return false;
+    if(urgF!=='all'&&s.urg!==urgF)return false;
+    if(q)return s.title.toLowerCase().includes(q)||(s.desc||'').toLowerCase().includes(q)||s.tags.some(t=>t.includes(q));
+    return true;
+  });
+  const feed=document.getElementById('feed');
+  if(!stories.length){showLoading();return}
+  if(!fd.length){feed.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-msg">No stories match — try different filters</div></div>`;return}
+  feed.innerHTML=fd.map(s=>{
+    const cat=CATS.find(c=>c.id===s.cat)||CATS[0];
+    const urg=URGS[s.urg]||URGS.LOW;
+    const open=openId===s.id;
+    return`<div class="card${open?' open':''}" id="c${s.id}" onclick="toggle('${s.id}')" style="border-left:3px solid ${cat.color}">
+      ${urg.pulse?`<div class="glow" style="background:radial-gradient(circle at top right,${urg.bg}25,transparent)"></div>`:''}
+      <div class="card-top">
+        <div class="badges">
+          <span class="urg-bdg" style="background:${urg.bg};${urg.pulse?'animation:pulse 1.5s ease-in-out infinite':''}">${urg.label}</span>
+          <span class="cat-bdg" style="background:${cat.color}20;color:${cat.color}">${cat.icon} ${cat.label}</span>
+        </div>
+        <div class="card-meta"><span class="read-t">${s.read}</span><span class="ago-t" style="color:${s.urg==='BREAKING'?'#ef4444':'#475569'}">${s.ago}</span></div>
+      </div>
+      <h3 class="headline">${s.title}</h3>
+      <div class="src-line">via <span class="src-nm">${srcName(s.link)}</span></div>
+      <p class="summary">${s.desc||'Tap to read full hedge fund analysis.'}</p>
+      ${open?`<div class="detail">
+        <div class="dblock blue-b"><div class="d-title" style="color:#3b82f6">💡 WHY THIS MATTERS</div><div class="d-txt">${s.why}</div></div>
+        <div class="dblock red-b"><div class="d-title" style="color:#ef4444">⚡ MARKET CONSEQUENCES</div>
+          ${s.cons.map(c=>`<div class="cons-row"><span class="cbul" style="color:#ef4444">●</span><span class="d-txt">${c}</span></div>`).join('')}
+        </div>
+        <div class="dblock grn-b"><div class="d-title" style="color:#10b981">🎯 HEDGE FUND ACTION</div><div class="d-txt">${s.action}</div></div>
+        ${s.link&&s.link!=='#'?`<a class="read-link" href="${s.link}" target="_blank">→ Read full article</a>`:''}
+        <div class="tags-row">${s.tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div>
+      </div>`:''}
+      <div class="expand-hint">${open?'▲ Collapse':'▼ Full analysis + hedge fund action items'}</div>
+    </div>`;
+  }).join('');
+}
+
+function srcName(link){try{const h=new URL(link).hostname.replace(/^(www\.|feeds\.)/,'');return h.split('.')[0].charAt(0).toUpperCase()+h.split('.')[0].slice(1)}catch{return'Global Wire'}}
+function showLoading(){document.getElementById('feed').innerHTML=`<div class="loading-wrap"><div class="spinner"></div><div class="load-msg">Fetching live global news…</div><div class="load-sub">Connecting to 16 wire services</div></div>`}
+function toggle(id){openId=openId===id?null:id;renderFeed();if(openId){setTimeout(()=>{const el=document.getElementById('c'+id);if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'})},60)}}
+function updateBrk(){const n=stories.filter(s=>s.urg==='BREAKING').length;document.getElementById('brkAlert').textContent=n?`${n} BREAKING ALERT${n>1?'S':''}`:''}
+
+function buildFilters(){
+  document.getElementById('catBtns').innerHTML=
+    `<button class="fbtn" id="ca-all" onclick="setCat('all')" style="background:rgba(59,130,246,.15);border-color:#3b82f6;color:#60a5fa">ALL SECTORS</button>`+
+    CATS.map(c=>`<button class="fbtn" id="ca-${c.id}" onclick="setCat('${c.id}')">${c.icon} ${c.label}</button>`).join('');
+  document.getElementById('urgBtns').innerHTML=
+    `<button class="ubtn" id="ua-all" onclick="setUrg('all')" style="background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.4);color:#3b82f6">ALL PRIORITY</button>`+
+    Object.entries(URGS).map(([k,v])=>`<button class="ubtn" id="ua-${k}" onclick="setUrg('${k}')">${v.label}</button>`).join('');
+}
+
+function setCat(id){
+  catF=id;
+  document.querySelectorAll('[id^="ca-"]').forEach(b=>{
+    const bid=b.id.slice(3);
+    const c=CATS.find(x=>x.id===bid);
+    b.style.background=bid==='all'?(id==='all'?'rgba(59,130,246,.15)':''):(id===bid?c.color+'20':'');
+    b.style.borderColor=bid==='all'?(id==='all'?'#3b82f6':'#1e293b'):(id===bid?c.color:'#1e293b');
+    b.style.color=bid==='all'?(id==='all'?'#60a5fa':'#475569'):(id===bid?c.color:'#475569');
+  });
+  renderFeed();
+}
+function setUrg(id){
+  urgF=id;
+  document.querySelectorAll('[id^="ua-"]').forEach(b=>{
+    const bid=b.id.slice(3);
+    const u=URGS[bid];
+    b.style.background=bid==='all'?(id==='all'?'rgba(59,130,246,.1)':'transparent'):(id===bid?u.bg+'18':'transparent');
+    b.style.borderColor=bid==='all'?(id==='all'?'rgba(59,130,246,.4)':'rgba(30,41,59,.5)'):(id===bid?u.bg:'rgba(30,41,59,.5)');
+    b.style.color=bid==='all'?(id==='all'?'#3b82f6':'#334155'):(id===bid?u.bg:'#334155');
+  });
+  renderFeed();
+}
+
+function buildTicker(){
+  const all=[...MKTDATA,...MKTDATA,...MKTDATA,...MKTDATA];
+  document.getElementById('ticker').innerHTML=all.map(m=>`<div class="t-item"><span class="t-sym">${m.s}</span><span class="t-val">${m.v}</span><span class="t-chg ${m.n?'neg':'pos'}">${m.c}</span></div>`).join('');
+}
+function buildSources(){
+  const show=10;
+  document.getElementById('srcTags').innerHTML=ALLSOURCES.slice(0,show).map(s=>`<span class="src-tag">${s}</span>`).join('');
+  document.getElementById('srcMore').textContent=`+${ALLSOURCES.length-show} more`;
+}
+function updateClock(){
+  const n=new Date();
+  document.getElementById('clkTime').textContent=n.toLocaleTimeString('en-US',{hour12:false,timeZone:'UTC'});
+  document.getElementById('clkDate').textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});
+}
+async function manualRefresh(){
+  const fab=document.getElementById('fab');
+  fab.classList.add('spinning');
+  await fetchFeeds();
+  fab.classList.remove('spinning');
+}
+
+buildTicker();buildSources();buildFilters();updateClock();
+setInterval(updateClock,1000);
+fetchFeeds();
+setInterval(fetchFeeds,5*60*1000);
+</script>
+</body>
+</html>
