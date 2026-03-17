@@ -19,6 +19,7 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 @keyframes alertPulse{0%,100%{border-color:rgba(220,38,38,.5)}50%{border-color:rgba(220,38,38,1)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 @keyframes progressBar{from{width:100%}to{width:0%}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 .hdr{background:#0a1020;border-bottom:1px solid rgba(59,130,246,0.18);padding:14px 16px 0;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
 .hdr-row{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px}
@@ -31,15 +32,12 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .clk-date{color:#475569;font-size:9px;text-align:right}
 .brk-alert{color:#ef4444;font-size:9px;font-weight:800;animation:pulse 1.5s ease-in-out infinite;text-align:right;min-height:13px}
 .refresh-status{color:#334155;font-size:8px;text-align:right;margin-top:1px}
+.progress-wrap{height:2px;background:rgba(30,41,59,.4);width:100%;overflow:hidden}
+.progress-bar{height:2px;background:linear-gradient(90deg,#3b82f6,#60a5fa);width:100%}
+.progress-bar.running{animation:progressBar 30s linear forwards}
 
-/* PROGRESS BAR */
-.progress-wrap{height:2px;background:rgba(30,41,59,.5);width:100%;overflow:hidden}
-.progress-bar{height:2px;background:linear-gradient(90deg,#3b82f6,#60a5fa);width:100%;transform-origin:left;transition:width .1s linear}
-.progress-bar.animating{animation:progressBar 30s linear forwards}
-
-/* TOAST */
 .toast-container{position:fixed;top:8px;left:10px;right:10px;z-index:1000;pointer-events:none;display:flex;flex-direction:column;gap:6px}
-.toast{background:linear-gradient(135deg,#1a0505,#200808);border:1px solid #dc2626;border-left:4px solid #ef4444;border-radius:10px;padding:11px 13px;animation:alertSlide .35s cubic-bezier(.22,1,.36,1);pointer-events:all;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 0 1px rgba(239,68,68,.2)}
+.toast{background:linear-gradient(135deg,#1a0505,#200808);border:1px solid #dc2626;border-left:4px solid #ef4444;border-radius:10px;padding:11px 13px;animation:alertSlide .35s cubic-bezier(.22,1,.36,1);pointer-events:all;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,.6)}
 .toast-inner{display:flex;gap:9px;align-items:flex-start}
 .toast-icon{font-size:15px;flex-shrink:0;animation:shake .8s ease-in-out}
 .toast-body{flex:1;min-width:0}
@@ -48,8 +46,7 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .toast-sub{color:#7f1d1d;font-size:9px;margin-top:2px}
 .toast-close{color:#475569;font-size:18px;flex-shrink:0;line-height:1}
 
-/* BREAKING BANNER */
-.breaking-banner{display:none;background:linear-gradient(135deg,#1a0a0a,#200808);border:1px solid rgba(220,38,38,.5);border-left:4px solid #dc2626;padding:12px 14px;margin:8px 14px 0;border-radius:10px;animation:alertPulse 2s ease-in-out infinite;cursor:pointer;position:relative}
+.breaking-banner{display:none;background:linear-gradient(135deg,#1a0a0a,#200808);border:1px solid rgba(220,38,38,.5);border-left:4px solid #dc2626;padding:12px 14px;margin:8px 14px 0;border-radius:10px;animation:alertPulse 2s ease-in-out infinite;position:relative}
 .breaking-banner.show{display:block}
 .bb-header{display:flex;align-items:center;gap:7px;margin-bottom:8px}
 .bb-icon{font-size:14px;animation:shake 1.2s ease-in-out infinite}
@@ -64,18 +61,16 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .bb-s-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .bb-s-cat{font-size:8px;font-weight:800;padding:1px 6px;border-radius:3px}
 .bb-s-ago{color:#7f1d1d;font-size:8px}
-.imp-dots{color:#ef4444;font-size:8px;margin-left:auto}
 .bb-tap{color:#7f1d1d;font-size:9px;margin-top:8px;font-weight:600;text-align:center}
 
-/* BRIEF */
-.brief-btn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.06));border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:10px 14px;margin:10px 14px 0;cursor:pointer}
+.brief-btn{display:flex;align-items:center;gap:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.22);border-radius:10px;padding:10px 14px;margin:10px 14px 0;cursor:pointer}
 .brief-btn:active{opacity:.8}
 .brief-icon{font-size:15px}
 .brief-label{flex:1}
 .brief-title{color:#f59e0b;font-size:12px;font-weight:800;letter-spacing:.04em}
 .brief-sub{color:#78350f;font-size:9px;margin-top:1px}
 .brief-arr{color:#f59e0b;font-size:14px}
-.brief-panel{margin:8px 14px;background:#0a1410;border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:14px;display:none}
+.brief-panel{margin:8px 14px;background:#0a1410;border:1px solid rgba(16,185,129,.18);border-radius:12px;padding:14px;display:none}
 .brief-panel.open{display:block;animation:slideDown .25s ease}
 .brief-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .brief-h-title{color:#10b981;font-size:11px;font-weight:800;letter-spacing:.06em}
@@ -96,8 +91,7 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .imp-high{background:rgba(239,68,68,.15);color:#ef4444}
 .imp-med{background:rgba(245,158,11,.15);color:#f59e0b}
 
-/* CHAIN */
-.chain-banner{margin:8px 14px 0;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:10px 14px;display:none}
+.chain-banner{margin:8px 14px 0;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.16);border-radius:10px;padding:10px 14px;display:none}
 .chain-banner.show{display:block}
 .chain-title{color:#ef4444;font-size:9px;font-weight:800;letter-spacing:.08em;margin-bottom:8px}
 .chain-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
@@ -106,7 +100,6 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .chain-move{font-size:11px;font-weight:700}
 .chain-desc{color:#475569;font-size:9px;margin-top:2px;line-height:1.3}
 
-/* CONTROLS */
 .ctrl{padding:10px 14px 7px}
 .srch{width:100%;background:#0d1626;border:1px solid #1e293b;border-radius:9px;padding:10px 13px;color:#e2e8f0;font-size:14px;outline:none;margin-bottom:9px;-webkit-appearance:none}
 .srch::placeholder{color:#334155}
@@ -117,30 +110,29 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .urow{display:flex;gap:5px;flex-wrap:wrap}
 .ubtn{flex-shrink:0;border:1px solid rgba(30,41,59,.5);border-radius:6px;background:transparent;color:#334155;font-size:9px;font-weight:700;padding:4px 9px;cursor:pointer;letter-spacing:.04em;-webkit-appearance:none}
 .story-count{color:#334155;font-size:9px;padding:0 14px 7px;display:flex;justify-content:space-between;align-items:center}
-.src-bar{margin:0 14px 10px;background:rgba(11,17,32,.5);border:1px solid rgba(30,41,59,.25);border-radius:7px;padding:6px 11px;display:flex;align-items:center;gap:7px;overflow-x:auto;scrollbar-width:none}
+.src-bar{margin:0 14px 10px;background:rgba(11,17,32,.5);border:1px solid rgba(30,41,59,.22);border-radius:7px;padding:6px 11px;display:flex;align-items:center;gap:7px;overflow-x:auto;scrollbar-width:none}
 .src-bar::-webkit-scrollbar{display:none}
 .src-lbl{color:#1e293b;font-size:8px;font-weight:800;letter-spacing:.08em;flex-shrink:0}
 .src-tags{display:flex;gap:3px}
 .src-tag{color:#334155;font-size:8px;background:rgba(30,41,59,.5);padding:2px 6px;border-radius:3px;white-space:nowrap;font-weight:600}
 .src-more{color:#3b82f6;font-size:8px;font-weight:700;white-space:nowrap;flex-shrink:0}
 
-/* FEED */
 .feed{padding:0 14px 80px;display:flex;flex-direction:column;gap:9px}
 .skeleton{background:#0b1120;border-radius:11px;padding:15px 16px;border:1px solid rgba(30,41,59,.4)}
 .skel-line{background:linear-gradient(90deg,#0f1829,#1a2540,#0f1829);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:4px;margin-bottom:8px}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 .card{background:#0b1120;border:1px solid rgba(30,41,59,.6);border-radius:11px;padding:14px 15px;cursor:pointer;transition:border-color .15s;position:relative;overflow:hidden;animation:fadeIn .25s ease}
 .card.open{background:linear-gradient(160deg,#0e1830,#0b1525)}
 .card.is-breaking{border:1px solid rgba(220,38,38,.35);border-left:3px solid #dc2626;background:#0f0a0a}
-.card.has-chain{border-top:2px solid rgba(245,158,11,.35)}
-.chain-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.22);border-radius:4px;padding:2px 6px;font-size:8px;font-weight:800;color:#f59e0b;letter-spacing:.04em;margin-bottom:7px}
+.card.has-chain{border-top:2px solid rgba(245,158,11,.3)}
+.chain-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:4px;padding:2px 6px;font-size:8px;font-weight:800;color:#f59e0b;letter-spacing:.04em;margin-bottom:7px}
 .glow{position:absolute;top:0;right:0;width:60px;height:60px;pointer-events:none}
 .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:5px}
 .badges{display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1}
 .urg-bdg{color:#fff;font-size:8px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:.07em;white-space:nowrap}
 .cat-bdg{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap}
 .new-bdg{background:#1d4ed8;color:#bfdbfe;font-size:7px;font-weight:800;padding:2px 5px;border-radius:3px;letter-spacing:.04em;animation:pulse 2s ease-in-out infinite}
+.fresh-bdg{background:rgba(16,185,129,.15);color:#10b981;font-size:7px;font-weight:800;padding:2px 5px;border-radius:3px;letter-spacing:.04em}
 .card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0}
 .read-t{color:#334155;font-size:8px}
 .ago-t{font-size:9px;font-weight:600}
@@ -153,10 +145,10 @@ h3.headline{color:#f1f5f9;font-size:14px;font-weight:700;line-height:1.35;margin
 .detail{margin-top:13px;border-top:1px solid rgba(30,41,59,.6);padding-top:13px}
 .dblock{border-radius:8px;padding:12px;margin-bottom:10px}
 .dblock:last-of-type{margin-bottom:0}
-.blue-b{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.16)}
+.blue-b{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.15)}
 .red-b{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.12)}
-.grn-b{background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.14)}
-.amber-b{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.16)}
+.grn-b{background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.13)}
+.amber-b{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.15)}
 .d-title{font-size:9px;font-weight:800;letter-spacing:.08em;margin-bottom:7px}
 .d-txt{color:#94a3b8;font-size:12.5px;line-height:1.62}
 .cons-row{display:flex;gap:6px;align-items:flex-start;margin-bottom:6px}
@@ -170,7 +162,11 @@ h3.headline{color:#f1f5f9;font-size:14px;font-weight:700;line-height:1.35;margin
 .tags-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:10px}
 .tag{background:rgba(30,41,59,.7);color:#334155;font-size:8px;padding:2px 7px;border-radius:20px;font-weight:600}
 .read-link{display:block;margin-top:9px;color:#3b82f6;font-size:11px;font-weight:700;text-decoration:none}
-.empty{text-align:center;padding:50px 20px;color:#1e293b}
+.no-stories{text-align:center;padding:40px 20px;color:#334155}
+.no-stories-icon{font-size:32px;margin-bottom:10px}
+.no-stories-title{font-size:14px;font-weight:700;color:#475569;margin-bottom:6px}
+.no-stories-sub{font-size:12px;line-height:1.6}
+.empty{text-align:center;padding:40px 20px}
 .empty-msg{font-size:13px;font-weight:600;color:#334155}
 .refresh-fab{position:fixed;bottom:26px;right:16px;background:#3b82f6;color:#fff;border:none;border-radius:50%;width:46px;height:46px;cursor:pointer;box-shadow:0 4px 16px rgba(59,130,246,.35);z-index:300;display:flex;align-items:center;justify-content:center}
 .refresh-fab:active{transform:scale(.92)}
@@ -224,8 +220,8 @@ h3.headline{color:#f1f5f9;font-size:14px;font-weight:700;line-height:1.35;margin
   <span class="brief-arr" id="briefArr">›</span>
 </div>
 <div class="brief-panel" id="briefPanel">
-  <div class="brief-header"><span class="brief-h-title">☀️ PRE-MARKET INTELLIGENCE BRIEF</span><span class="brief-close" onclick="toggleBrief()">×</span></div>
-  <div class="brief-section"><div class="brief-s-title">🌍 TOP 3 MACRO THEMES</div><div id="briefThemes"></div></div>
+  <div class="brief-header"><span class="brief-h-title">☀️ PRE-MARKET BRIEF</span><span class="brief-close" onclick="toggleBrief()">×</span></div>
+  <div class="brief-section"><div class="brief-s-title">🌍 TOP MACRO THEMES</div><div id="briefThemes"></div></div>
   <div class="brief-section"><div class="brief-s-title">📊 KEY EVENTS TODAY</div><div id="briefEvents"></div></div>
   <div class="brief-section"><div class="brief-s-title">⚡ OVERNIGHT MOVES</div><div id="briefMoves"></div></div>
   <div class="brief-section"><div class="brief-s-title">🎯 WHAT TO WATCH</div><div id="briefWatch"></div></div>
@@ -244,19 +240,31 @@ h3.headline{color:#f1f5f9;font-size:14px;font-weight:700;line-height:1.35;margin
 <div class="story-count" id="storyCount"></div>
 <div class="src-bar"><span class="src-lbl">SOURCES</span><div class="src-tags" id="srcTags"></div><span class="src-more" id="srcMore"></span></div>
 <div class="feed" id="feed"></div>
-<div class="footer"><p>MERIDIAN INTELLIGENCE · Institutional use only · Not investment advice · <span id="lastRefresh"></span></p></div>
+<div class="footer"><p>MERIDIAN INTELLIGENCE · 24h filter active · Stories older than 24h automatically removed · <span id="lastRefresh"></span></p></div>
 
 <button class="refresh-fab" id="fab" onclick="manualRefresh()">
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
 </button>
 
 <script>
+// ── STRICT 24H CUTOFF ──────────────────────────────────────────────────────
+const MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const REFRESH_INTERVAL = 30;
+const MAX_PER_FEED = 12;
+
 const CATS=[{id:'macro',label:'Macro',icon:'🏛️',color:'#3b82f6'},{id:'equities',label:'Equities',icon:'📈',color:'#10b981'},{id:'credit',label:'Credit',icon:'🏦',color:'#8b5cf6'},{id:'commodities',label:'Commodities',icon:'⛽',color:'#f59e0b'},{id:'geopolitics',label:'Geopolitics',icon:'🌍',color:'#ef4444'},{id:'tech',label:'Tech',icon:'💡',color:'#06b6d4'},{id:'fx',label:'FX & Crypto',icon:'💱',color:'#ec4899'},{id:'alts',label:'Alternatives',icon:'🔑',color:'#84cc16'}];
 const URGS={BREAKING:{label:'BREAKING',bg:'#dc2626',pulse:true},HIGH:{label:'HIGH IMPACT',bg:'#ea580c',pulse:false},MEDIUM:{label:'NOTABLE',bg:'#b45309',pulse:false},LOW:{label:'MONITOR',bg:'#374151',pulse:false}};
 const ALLSOURCES=['Bloomberg','Reuters','Financial Times','WSJ','CNBC','The Economist','Nikkei Asia','S&P Global',"Moody's",'Goldman Sachs','JP Morgan','ECB','Federal Reserve','IMF','BIS','AP','BBC World','Al Jazeera','Fitch','Bank of England','Morgan Stanley','MarketWatch','NYT Business','Investing.com'];
-const CHAIN_MAPS={oil:{trigger:'OIL PRICE SHOCK',items:[{asset:'AIRLINES',move:'+4-6%',dir:'pos',desc:'Fuel cost relief'},{asset:'USD/RUB',move:'+8-12%',dir:'neg',desc:'Petro-state FX hit'},{asset:'HY ENERGY',move:'-3-5%',dir:'neg',desc:'Shale breakevens threatened'},{asset:'INFLATION',move:'-0.3%',dir:'pos',desc:'CPI relief in 4-6 weeks'},{asset:'TRANSPORTS',move:'+3-4%',dir:'pos',desc:'Lower operating costs'},{asset:'EM BONDS',move:'-2-3%',dir:'neg',desc:'Oil exporters squeezed'}]},fed:{trigger:'FED POLICY SHIFT',items:[{asset:'TLT BONDS',move:'+3-5%',dir:'pos',desc:'Duration rally'},{asset:'USD/DXY',move:'-1.5%',dir:'neg',desc:'Dollar weakens'},{asset:'GOLD',move:'+2-3%',dir:'pos',desc:'Real yields fall'},{asset:'BANKS',move:'-3-4%',dir:'neg',desc:'NIM compression risk'},{asset:'GROWTH/TECH',move:'+4-6%',dir:'pos',desc:'Discount rate re-rates'},{asset:'EM FX',move:'+2%',dir:'pos',desc:'Capital flows to EM'}]},china:{trigger:'CHINA MARKET EVENT',items:[{asset:'COPPER',move:'-3-5%',dir:'neg',desc:'Demand risk'},{asset:'LUXURY',move:'-5-7%',dir:'neg',desc:'30% sales exposure'},{asset:'AUD/USD',move:'-2-3%',dir:'neg',desc:'Commodity proxy'},{asset:'SEMIS',move:'-4-6%',dir:'neg',desc:'Supply chain hit'},{asset:'RARE EARTHS',move:'+15%',dir:'pos',desc:'Export restriction risk'},{asset:'UST',move:'+1-2%',dir:'pos',desc:'Safe haven bid'}]},rates:{trigger:'INTEREST RATE MOVE',items:[{asset:'REITs',move:'-4-6%',dir:'neg',desc:'Cap rate pressure'},{asset:'UTILITIES',move:'-3-4%',dir:'neg',desc:'Yield proxy hit'},{asset:'BANKS',move:'+3-5%',dir:'pos',desc:'NIM expansion'},{asset:'MORTGAGES',move:'-2%',dir:'neg',desc:'30Y rate follows'},{asset:'VALUE/GROWTH',move:'+5%',dir:'pos',desc:'Rotation to value'},{asset:'USD',move:'+1-2%',dir:'pos',desc:'Rate diff widens'}]},geopolitics:{trigger:'GEOPOLITICAL ESCALATION',items:[{asset:'GOLD',move:'+3-5%',dir:'pos',desc:'Safe haven surge'},{asset:'VIX',move:'+25-40%',dir:'neg',desc:'Fear gauge spikes'},{asset:'OIL',move:'+5-8%',dir:'neg',desc:'Supply disruption'},{asset:'DEFENSE',move:'+4-6%',dir:'pos',desc:'Spending increase'},{asset:'EM ASSETS',move:'-5-8%',dir:'neg',desc:'Risk-off selling'},{asset:'USD/JPY',move:'-3-4%',dir:'pos',desc:'Yen safe haven'}]}};
 
-// SPEED OPTIMISATION: Fastest feeds first, grouped in priority batches
+const CHAIN_MAPS={
+  oil:{trigger:'OIL PRICE SHOCK',items:[{asset:'AIRLINES',move:'+4-6%',dir:'pos',desc:'Fuel cost relief'},{asset:'USD/RUB',move:'+8-12%',dir:'neg',desc:'Petro-state FX hit'},{asset:'HY ENERGY',move:'-3-5%',dir:'neg',desc:'Shale breakevens threatened'},{asset:'INFLATION',move:'-0.3%',dir:'pos',desc:'CPI relief in 4-6 weeks'},{asset:'TRANSPORTS',move:'+3-4%',dir:'pos',desc:'Lower operating costs'},{asset:'EM BONDS',move:'-2-3%',dir:'neg',desc:'Oil exporters squeezed'}]},
+  fed:{trigger:'FED POLICY SHIFT',items:[{asset:'TLT BONDS',move:'+3-5%',dir:'pos',desc:'Duration rally'},{asset:'USD/DXY',move:'-1.5%',dir:'neg',desc:'Dollar weakens'},{asset:'GOLD',move:'+2-3%',dir:'pos',desc:'Real yields fall'},{asset:'BANKS',move:'-3-4%',dir:'neg',desc:'NIM compression risk'},{asset:'GROWTH/TECH',move:'+4-6%',dir:'pos',desc:'Discount rate re-rates'},{asset:'EM FX',move:'+2%',dir:'pos',desc:'Capital flows to EM'}]},
+  china:{trigger:'CHINA MARKET EVENT',items:[{asset:'COPPER',move:'-3-5%',dir:'neg',desc:'Demand risk'},{asset:'LUXURY',move:'-5-7%',dir:'neg',desc:'30% sales exposure'},{asset:'AUD/USD',move:'-2-3%',dir:'neg',desc:'Commodity proxy'},{asset:'SEMIS',move:'-4-6%',dir:'neg',desc:'Supply chain hit'},{asset:'RARE EARTHS',move:'+15%',dir:'pos',desc:'Export restriction risk'},{asset:'UST',move:'+1-2%',dir:'pos',desc:'Safe haven bid'}]},
+  rates:{trigger:'INTEREST RATE MOVE',items:[{asset:'REITs',move:'-4-6%',dir:'neg',desc:'Cap rate pressure'},{asset:'UTILITIES',move:'-3-4%',dir:'neg',desc:'Yield proxy hit'},{asset:'BANKS',move:'+3-5%',dir:'pos',desc:'NIM expansion'},{asset:'MORTGAGES',move:'-2%',dir:'neg',desc:'30Y rate follows'},{asset:'VALUE/GROWTH',move:'+5%',dir:'pos',desc:'Rotation to value'},{asset:'USD',move:'+1-2%',dir:'pos',desc:'Rate diff widens'}]},
+  geopolitics:{trigger:'GEOPOLITICAL ESCALATION',items:[{asset:'GOLD',move:'+3-5%',dir:'pos',desc:'Safe haven surge'},{asset:'VIX',move:'+25-40%',dir:'neg',desc:'Fear gauge spikes'},{asset:'OIL',move:'+5-8%',dir:'neg',desc:'Supply disruption'},{asset:'DEFENSE',move:'+4-6%',dir:'pos',desc:'Spending increase'},{asset:'EM ASSETS',move:'-5-8%',dir:'neg',desc:'Risk-off selling'},{asset:'USD/JPY',move:'-3-4%',dir:'pos',desc:'Yen safe haven'}]},
+};
+
+// Fastest feeds first
 const RSS_FAST=[
   {u:'https://feeds.reuters.com/reuters/businessNews',c:'macro'},
   {u:'https://feeds.reuters.com/reuters/worldNews',c:'geopolitics'},
@@ -279,41 +287,57 @@ const RSS_SLOW=[
   {u:'https://www.investing.com/rss/news_96.rss',c:'fx'},
   {u:'https://feeds.reuters.com/reuters/financialNews',c:'credit'},
 ];
-const PROXY='https://api.allorigins.win/get?url=';
-const MAX_PER_FEED=12;
-const REFRESH_INTERVAL=30; // 30 seconds
 
+const PROXY='https://api.allorigins.win/get?url=';
 let stories=[],catF='all',urgF='all',openId=null,briefOpen=false,countdown=REFRESH_INTERVAL;
 let seenBreaking=new Set(),isFirstLoad=true,isFetching=false;
 
-// ─── BREAKING ALERT ───────────────────────────────────────────────────────────
-function scoreImportance(t,d){
+// ── STRICT AGE FILTER ─────────────────────────────────────────────────────
+function isWithin24h(pub){
+  if(!pub||isNaN(pub.getTime()))return false;
+  const age=Date.now()-pub.getTime();
+  return age>=0 && age<=MAX_AGE_MS;
+}
+
+function formatAge(pub){
+  const mins=Math.floor((Date.now()-pub.getTime())/60000);
+  if(mins<1)return'just now';
+  if(mins<60)return`${mins}m ago`;
+  const hrs=Math.floor(mins/60);
+  const rem=mins%60;
+  if(hrs<24)return rem>0?`${hrs}h ${rem}m ago`:`${hrs}h ago`;
+  return null; // shouldn't reach here after filter
+}
+
+// ── BREAKING ALERTS ───────────────────────────────────────────────────────
+function scoreImp(t,d){
   const s=(t+' '+d).toLowerCase();
   let n=0;
   if(/emergency|collapse|crash|crisis|default|war declared|attack on|explosion|halt trading|circuit breaker/i.test(s))n+=10;
   if(/breaking|urgent|plunge|surge|shock|ban|sanctions|invasion/i.test(s))n+=6;
   if(/federal reserve|ecb|bank of japan|rate cut|rate hike|gdp|cpi|recession|opec/i.test(s))n+=4;
   if(/billion|trillion|merger|acquisition|earnings|beat|miss/i.test(s))n+=2;
-  return n;
+  return Math.min(n,10);
 }
-function showBreakingBanner(bstories){
-  if(!bstories.length)return;
-  document.getElementById('bbCount').textContent=bstories.length;
+
+function showBreakingBanner(bs){
+  if(!bs.length)return;
+  document.getElementById('bbCount').textContent=bs.length;
   document.getElementById('bbTime').textContent=new Date().toLocaleTimeString('en-US',{hour12:false,timeZone:'UTC'})+' UTC';
-  document.getElementById('bbStories').innerHTML=bstories.slice(0,4).map(s=>{
+  document.getElementById('bbStories').innerHTML=bs.slice(0,4).map(s=>{
     const cat=CATS.find(c=>c.id===s.cat)||CATS[0];
-    const dots='●'.repeat(Math.min(5,Math.ceil(s.imp/2)))+'○'.repeat(5-Math.min(5,Math.ceil(s.imp/2)));
     return`<div class="bb-story" onclick="jumpToStory('${s.id}')">
       <div class="bb-s-title">${s.title}</div>
       <div class="bb-s-meta">
         <span class="bb-s-cat" style="background:${cat.color}20;color:${cat.color}">${cat.icon} ${cat.label}</span>
         <span class="bb-s-ago">${s.ago}</span>
-        <span class="imp-dots">${dots}</span>
+        <span style="color:#ef4444;font-size:8px;margin-left:auto">Impact ${s.imp}/10</span>
       </div>
     </div>`;
   }).join('');
   document.getElementById('breakingBanner').classList.add('show');
 }
+
 function showToast(s){
   const cat=CATS.find(c=>c.id===s.cat)||CATS[0];
   const id='t'+s.id;
@@ -324,23 +348,35 @@ function showToast(s){
     <div class="toast-body">
       <div class="toast-label">BREAKING · ${cat.icon} ${cat.label.toUpperCase()}</div>
       <div class="toast-title">${s.title}</div>
-      <div class="toast-sub">Impact score ${s.imp}/10 · Tap for full analysis</div>
+      <div class="toast-sub">Impact ${s.imp}/10 · ${s.ago} · Tap for full analysis</div>
     </div>
     <span class="toast-close" onclick="event.stopPropagation();dismissToast('${id}')">×</span>
   </div>`;
   div.onclick=()=>{dismissToast(id);jumpToStory(s.id);};
   document.getElementById('toastContainer').appendChild(div);
   if(navigator.vibrate)navigator.vibrate([150,80,150]);
-  // Play alert sound
-  try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.setValueAtTime(880,ctx.currentTime);o.frequency.setValueAtTime(660,ctx.currentTime+.15);g.gain.setValueAtTime(.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.4);o.start(ctx.currentTime);o.stop(ctx.currentTime+.4);}catch(e){}
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator();const g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.frequency.setValueAtTime(880,ctx.currentTime);
+    o.frequency.setValueAtTime(660,ctx.currentTime+.15);
+    g.gain.setValueAtTime(.25,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.4);
+    o.start(ctx.currentTime);o.stop(ctx.currentTime+.4);
+  }catch(e){}
   setTimeout(()=>dismissToast(id),8000);
 }
-function dismissToast(id){const el=document.getElementById(id);if(el){el.style.transition='all .25s ease';el.style.opacity='0';el.style.transform='translateX(110%)';setTimeout(()=>el.remove(),260);}}
+
+function dismissToast(id){
+  const el=document.getElementById(id);
+  if(el){el.style.transition='all .25s ease';el.style.opacity='0';el.style.transform='translateX(110%)';setTimeout(()=>el.remove(),260);}
+}
 function closeBanner(){document.getElementById('breakingBanner').classList.remove('show');}
 function jumpToStory(id){openId=id;catF='all';urgF='all';document.getElementById('srch').value='';renderFeed();setTimeout(()=>{const el=document.getElementById('c'+id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);}
 
 function processAlerts(all){
-  all.forEach(s=>{s.imp=scoreImportance(s.title,s.desc||'');});
+  all.forEach(s=>{s.imp=scoreImp(s.title,s.desc||'');});
   const breaking=all.filter(s=>(s.urg==='BREAKING'&&s.imp>=4)||(s.urg==='HIGH'&&s.imp>=8)).sort((a,b)=>b.imp-a.imp);
   const newOnes=breaking.filter(s=>!seenBreaking.has(s.title.slice(0,50)));
   if(newOnes.length){
@@ -353,7 +389,7 @@ function processAlerts(all){
   return all;
 }
 
-// ─── CLASSIFY ────────────────────────────────────────────────────────────────
+// ── CLASSIFY ──────────────────────────────────────────────────────────────
 function classifyCat(t,d,def){
   const s=(t+' '+d).toLowerCase();
   if(/bitcoin|crypto|ethereum|binance|coinbase|defi|nft|forex|eur\/usd|gbp|yen|yuan|usd\//i.test(s))return'fx';
@@ -373,135 +409,247 @@ function scoreUrg(t,d){
   if(/report|data|forecast|outlook|quarter|growth|decline|concern/i.test(s))return'MEDIUM';
   return'LOW';
 }
-function getChain(t,d){const s=(t+' '+d).toLowerCase();if(/oil|crude|brent|opec/i.test(s))return'oil';if(/fed|federal reserve|rate cut|fomc|powell/i.test(s))return'fed';if(/china|yuan|beijing/i.test(s))return'china';if(/interest rate|yield curve|treasury bond/i.test(s))return'rates';if(/war|sanction|conflict|military|attack/i.test(s))return'geopolitics';return null;}
-function detectChain(s){const txt=s.slice(0,8).map(x=>x.title).join(' ').toLowerCase();if(/oil|crude|brent|opec/i.test(txt))return'oil';if(/fed|federal reserve|rate cut|powell|fomc/i.test(txt))return'fed';if(/china|beijing|yuan/i.test(txt))return'china';if(/interest rate|yield|treasury/i.test(txt))return'rates';if(/war|sanction|conflict|attack|nato/i.test(txt))return'geopolitics';return null;}
-function showChainReaction(type){const c=CHAIN_MAPS[type];if(!c)return;document.getElementById('chainTrigger').textContent=c.trigger;document.getElementById('chainGrid').innerHTML=c.items.map(i=>`<div class="chain-item"><div class="chain-asset">${i.asset}</div><div class="chain-move ${i.dir==='pos'?'pos':'neg'}">${i.move}</div><div class="chain-desc">${i.desc}</div></div>`).join('');document.getElementById('chainBanner').classList.add('show');}
+function getChain(t,d){
+  const s=(t+' '+d).toLowerCase();
+  if(/oil|crude|brent|opec/i.test(s))return'oil';
+  if(/fed|federal reserve|rate cut|fomc|powell/i.test(s))return'fed';
+  if(/china|yuan|beijing/i.test(s))return'china';
+  if(/interest rate|yield curve|treasury bond/i.test(s))return'rates';
+  if(/war|sanction|conflict|military|attack/i.test(s))return'geopolitics';
+  return null;
+}
+function detectChain(s){
+  const txt=s.slice(0,8).map(x=>x.title).join(' ').toLowerCase();
+  if(/oil|crude|brent|opec/i.test(txt))return'oil';
+  if(/fed|federal reserve|rate cut|powell|fomc/i.test(txt))return'fed';
+  if(/china|beijing|yuan/i.test(txt))return'china';
+  if(/interest rate|yield|treasury/i.test(txt))return'rates';
+  if(/war|sanction|conflict|attack|nato/i.test(txt))return'geopolitics';
+  return null;
+}
+function showChainReaction(type){
+  const c=CHAIN_MAPS[type];if(!c)return;
+  document.getElementById('chainTrigger').textContent=c.trigger;
+  document.getElementById('chainGrid').innerHTML=c.items.map(i=>`<div class="chain-item"><div class="chain-asset">${i.asset}</div><div class="chain-move ${i.dir==='pos'?'pos':'neg'}">${i.move}</div><div class="chain-desc">${i.desc}</div></div>`).join('');
+  document.getElementById('chainBanner').classList.add('show');
+}
 
 const WHY={macro:'Macro data and central bank moves reprice every asset class simultaneously. Rate changes affect borrowing costs, equity discount rates, and currency flows globally.',equities:'Equity moves create pair trade and sector rotation opportunities. Watch for contagion into supply chains, competitors, and index rebalancing.',credit:'Credit markets lead the cycle. Spread widening or covenant deterioration precedes equity stress by weeks — your early warning signal.',commodities:'Commodity moves are a global inflation tax or relief valve. Energy costs feed through to consumer prices and petro-state FX within weeks.',geopolitics:'Geopolitical events re-price risk premiums across EM assets, disrupt supply chains, and can freeze entire asset classes via sanctions.',tech:'Tech sector capex guidance moves semiconductor supply chains, cloud infrastructure spend, and the AI investment thesis.',fx:'FX moves affect every cross-border earnings translation, EM debt servicing costs, and carry trade profitability.',alts:'Alt asset flows signal institutional risk appetite. Redemption stress in private vehicles often precedes public market volatility.'};
-const CONS={macro:['Bond yields likely to reprice 10-30bp','Equity risk premium adjusts — watch growth vs. value rotation','USD move flows through to EM sovereign spreads','Commodity prices re-anchor on new rate/growth expectations'],equities:['Sector ETF re-pricing within 24-48 hours','Supply chain and competitor names face sympathy moves','Options volatility spikes on earnings revisions','Index rebalancing may amplify moves at month-end'],credit:['HY spreads sensitive to deterioration in fundamentals','Leveraged loan pricing adjusts on default expectations','CLO tranche valuations face mark-to-market pressure','Refinancing windows open or close on direction'],commodities:['Energy costs flow to airline, transport and chemical margins','Petro-state currencies (NOK, CAD, RUB) move in lockstep','Next month CPI partially locked in by today\'s move','EM importers face balance of payments pressure'],geopolitics:['Risk-off flows favor USD, JPY, gold and short-duration USTs','EM equities and currencies face indiscriminate selling','Supply chain disruption premium builds into sector multiples','Sanctions risk reprices counterparty exposure in financials'],tech:['Semiconductor supply chain re-prices on capex changes','AI infrastructure spend shifts between cloud providers','Regulatory risk premium expands across mega-cap tech','M&A activity intensifies around affected sector'],fx:['Carry trade positions unwind if volatility spikes','EM current account deficit nations face outflow pressure','Competitiveness shifts hit industrial sector margins','Central bank reserve management becomes active'],alts:['Liquidity premium re-prices across illiquid asset classes','NAV marks face scrutiny as public proxies diverge','Fundraising appetite dampens across vintage years','Distribution pace from existing funds may slow']};
+const CONS={macro:['Bond yields likely to reprice 10-30bp','Equity risk premium adjusts — growth vs. value rotation','USD move flows through to EM sovereign spreads','Commodity prices re-anchor on new rate/growth expectations'],equities:['Sector ETF re-pricing within 24-48 hours','Supply chain and competitor names face sympathy moves','Options volatility spikes on earnings revisions','Index rebalancing may amplify moves at month-end'],credit:['HY spreads sensitive to deterioration in fundamentals','Leveraged loan pricing adjusts on default expectations','CLO tranche valuations face mark-to-market pressure','Refinancing windows open or close on direction'],commodities:['Energy costs flow to airline, transport and chemical margins','Petro-state currencies (NOK, CAD, RUB) move in lockstep','Next month CPI partially locked in by today\'s move','EM importers face balance of payments pressure'],geopolitics:['Risk-off flows favor USD, JPY, gold and short-duration USTs','EM equities and currencies face indiscriminate selling','Supply chain disruption premium builds into sector multiples','Sanctions risk reprices counterparty exposure in financials'],tech:['Semiconductor supply chain re-prices on capex changes','AI infrastructure spend shifts between cloud providers','Regulatory risk premium expands across mega-cap tech','M&A activity intensifies around affected sector'],fx:['Carry trade positions unwind if volatility spikes','EM current account deficit nations face outflow pressure','Competitiveness shifts hit industrial sector margins','Central bank reserve management becomes active'],alts:['Liquidity premium re-prices across illiquid asset classes','NAV marks face scrutiny as public proxies diverge','Fundraising appetite dampens across vintage years','Distribution pace from existing funds may slow']};
 const ACTION={macro:'Monitor yield curve for recession signals. Duration via TLT or TMF. Check Fed Funds futures for rate path repricing. DXY as key macro risk gauge.',equities:'Review sector exposure vs. index weight. Best-in-class vs. laggards for pair trades. Check options skew for dealer positioning.',credit:'Monitor LCDX and CDX IG/HY for stress. Review CLO tranche exposure. Check HY maturity wall for refinancing risk.',commodities:'Check futures curve — backwardation signals supply tightness. Energy equity pairs: integrated majors vs. E&P pure plays.',geopolitics:'Reduce EM exposure in affected regions. Long volatility via VIX options. Defense sector as structural long on escalation.',tech:'Pair trade: cloud infrastructure longs vs. legacy hardware shorts. Monitor hyperscaler capex for AI demand signal.',fx:'Check carry trade funding costs and vol-adjusted returns. EM currency basket vs. DXY for relative value.',alts:'Avoid illiquid vehicles with elevated redemption queues. Public REIT discounts to NAV as entry signal when marks reset.'};
 
-function parseRSS(xml,defCat){
+function parseRSS(xml, defCat){
   const doc=new DOMParser().parseFromString(xml,'text/xml');
+  const now=Date.now();
   return[...doc.querySelectorAll('item')].slice(0,MAX_PER_FEED).map(item=>{
     const title=(item.querySelector('title')?.textContent||'').trim();
     const desc=(item.querySelector('description')?.textContent||'').replace(/<[^>]+>/g,'').trim().slice(0,280);
     const link=(item.querySelector('link')?.textContent||'').trim();
-    const pub=new Date(item.querySelector('pubDate')?.textContent||Date.now());
+    const pubStr=item.querySelector('pubDate')?.textContent||'';
     if(!title)return null;
+
+    // ── STRICT 24H FILTER ──────────────────────────────────────────────
+    let pub=null;
+    if(pubStr){
+      pub=new Date(pubStr);
+      // If date is invalid or older than 24h, DISCARD
+      if(isNaN(pub.getTime()))return null;
+      if(!isWithin24h(pub))return null;
+    } else {
+      // No date = assume it might be old, discard to be safe
+      return null;
+    }
+    // ──────────────────────────────────────────────────────────────────
+
     const cat=classifyCat(title,desc,defCat);
     const urg=scoreUrg(title,desc);
-    const mins=Math.floor((Date.now()-pub)/60000);
-    const ago=mins<1?'just now':mins<60?`${mins}m ago`:mins<1440?`${Math.floor(mins/60)}h ago`:`${Math.floor(mins/1440)}d ago`;
+    const ago=formatAge(pub);
+    if(!ago)return null; // extra safety check
+    const mins=Math.floor((now-pub.getTime())/60000);
     const chain=getChain(title,desc);
-    return{id:Math.random().toString(36).slice(2),title,desc,link,cat,urg,ago,pub,chain,imp:0,isNew:mins<20,
-      why:WHY[cat]||WHY.macro,cons:CONS[cat]||CONS.macro,action:ACTION[cat]||ACTION.macro,
+
+    return{
+      id:Math.random().toString(36).slice(2),
+      title,desc,link,cat,urg,ago,pub,chain,imp:0,
+      isNew:mins<30,
+      isFresh:mins<60,
+      why:WHY[cat]||WHY.macro,
+      cons:CONS[cat]||CONS.macro,
+      action:ACTION[cat]||ACTION.macro,
       tags:[cat,...(urg==='BREAKING'?['breaking']:[]),...(chain?[chain]:[])],
-      read:`${Math.max(2,Math.min(6,Math.ceil((title.length+desc.length)/380)))} min`};
+      read:`${Math.max(2,Math.min(6,Math.ceil((title.length+desc.length)/380)))} min`
+    };
   }).filter(Boolean);
 }
 
 function dedupSort(all){
   const seen=new Set();
-  const deduped=all.filter(s=>{const k=s.title.slice(0,40).toLowerCase();if(seen.has(k))return false;seen.add(k);return true;});
-  const ord={BREAKING:0,HIGH:1,MEDIUM:2,LOW:3};
-  return deduped.sort((a,b)=>ord[a.urg]-ord[b.urg]||b.pub-a.pub);
+  return all
+    .filter(s=>{const k=s.title.slice(0,40).toLowerCase();if(seen.has(k))return false;seen.add(k);return true;})
+    .sort((a,b)=>{
+      const ord={BREAKING:0,HIGH:1,MEDIUM:2,LOW:3};
+      return ord[a.urg]-ord[b.urg]||b.pub-a.pub;
+    });
 }
 
-// FAST LOAD: Fetch priority feeds first, show immediately, then load rest in background
 async function fetchFeeds(){
   if(isFetching)return;
   isFetching=true;
-
-  // Show skeleton only on very first load
   if(!stories.length)showSkeletons();
 
-  // BATCH 1: Fast feeds — show results immediately
-  const fastResults=await Promise.allSettled(
-    RSS_FAST.map(f=>fetch(PROXY+encodeURIComponent(f.u),{signal:AbortSignal.timeout(5000)})
-      .then(r=>r.json()).then(d=>parseRSS(d.contents||'',f.c)).catch(()=>[]))
+  // BATCH 1 — fast feeds, show immediately
+  const fastRes=await Promise.allSettled(
+    RSS_FAST.map(f=>
+      fetch(PROXY+encodeURIComponent(f.u),{signal:AbortSignal.timeout(5000)})
+        .then(r=>r.json())
+        .then(d=>parseRSS(d.contents||'',f.c))
+        .catch(()=>[])
+    )
   );
-  let fastStories=[];
-  fastResults.forEach(r=>{if(r.status==='fulfilled')fastStories.push(...r.value)});
-  fastStories=dedupSort(fastStories);
-  fastStories=processAlerts(fastStories);
-  if(fastStories.length){
-    stories=fastStories;
+  let fast=[];
+  fastRes.forEach(r=>{if(r.status==='fulfilled')fast.push(...r.value)});
+  fast=dedupSort(fast);
+  fast=processAlerts(fast);
+  if(fast.length){
+    stories=fast;
     renderFeed();updateBrk();buildMorningBrief();
     const ct=detectChain(stories);if(ct)showChainReaction(ct);
   }
 
-  // BATCH 2: Remaining feeds — update in background
-  const slowResults=await Promise.allSettled(
-    RSS_SLOW.map(f=>fetch(PROXY+encodeURIComponent(f.u),{signal:AbortSignal.timeout(8000)})
-      .then(r=>r.json()).then(d=>parseRSS(d.contents||'',f.c)).catch(()=>[]))
+  // BATCH 2 — remaining feeds, update silently
+  const slowRes=await Promise.allSettled(
+    RSS_SLOW.map(f=>
+      fetch(PROXY+encodeURIComponent(f.u),{signal:AbortSignal.timeout(8000)})
+        .then(r=>r.json())
+        .then(d=>parseRSS(d.contents||'',f.c))
+        .catch(()=>[])
+    )
   );
-  let allStories=[...fastStories];
-  slowResults.forEach(r=>{if(r.status==='fulfilled')allStories.push(...r.value)});
-  allStories=dedupSort(allStories);
-  allStories=processAlerts(allStories);
+  let all=[...fast];
+  slowRes.forEach(r=>{if(r.status==='fulfilled')all.push(...r.value)});
+  all=dedupSort(all);
+  all=processAlerts(all);
 
-  stories=allStories.length?allStories:fallback();
+  if(all.length){
+    stories=all;
+  } else if(!stories.length){
+    // Truly no stories in last 24h — show message
+    showNoStories();
+    isFetching=false;
+    countdown=REFRESH_INTERVAL;
+    return;
+  }
+
   renderFeed();updateBrk();buildMorningBrief();
   const ct=detectChain(stories);if(ct)showChainReaction(ct);
 
   const now=new Date();
-  document.getElementById('lastRefresh').textContent=`Updated ${now.toLocaleTimeString('en-US',{hour12:false,timeZone:'UTC'})} UTC · ${stories.length} stories`;
+  document.getElementById('lastRefresh').textContent=
+    `Updated ${now.toLocaleTimeString('en-US',{hour12:false,timeZone:'UTC'})} UTC · ${stories.length} stories (24h only)`;
+
   countdown=REFRESH_INTERVAL;
   isFetching=false;
 
   // Restart progress bar
   const pb=document.getElementById('progressBar');
-  pb.style.animation='none';pb.style.width='100%';
-  requestAnimationFrame(()=>{pb.style.animation=`progressBar ${REFRESH_INTERVAL}s linear forwards`;});
+  pb.style.animation='none';pb.offsetHeight; // reflow
+  pb.style.width='100%';
+  pb.classList.remove('running');
+  requestAnimationFrame(()=>{pb.classList.add('running');});
 }
 
 function showSkeletons(){
   document.getElementById('feed').innerHTML=Array(5).fill(0).map(()=>`
     <div class="skeleton">
-      <div class="skel-line" style="height:10px;width:40%;margin-bottom:10px"></div>
-      <div class="skel-line" style="height:16px;width:90%"></div>
-      <div class="skel-line" style="height:16px;width:70%"></div>
-      <div class="skel-line" style="height:12px;width:85%;margin-top:4px"></div>
-      <div class="skel-line" style="height:12px;width:60%"></div>
+      <div class="skel-line" style="height:10px;width:35%;margin-bottom:10px"></div>
+      <div class="skel-line" style="height:16px;width:92%"></div>
+      <div class="skel-line" style="height:16px;width:68%"></div>
+      <div class="skel-line" style="height:12px;width:80%;margin-top:6px"></div>
+      <div class="skel-line" style="height:12px;width:55%"></div>
     </div>`).join('');
 }
 
-function fallback(){return[{id:'fb1',cat:'macro',urg:'HIGH',title:'Federal Reserve Officials Signal Caution on Rate Cuts',desc:'Fed governors indicated they need more data before adjusting policy, with inflation remaining above 2% target.',ago:'45m ago',pub:new Date(Date.now()-2700000),link:'#',chain:'fed',imp:6,isNew:false,why:WHY.macro,cons:CONS.macro,action:ACTION.macro,tags:['macro','fed'],read:'4 min'},{id:'fb2',cat:'commodities',urg:'HIGH',title:'Oil Prices Drop on OPEC+ Production Increase Reports',desc:'Crude oil fell over 4% on reports that OPEC+ members are discussing increasing production quotas.',ago:'2h ago',pub:new Date(Date.now()-7200000),link:'#',chain:'oil',imp:5,isNew:false,why:WHY.commodities,cons:CONS.commodities,action:ACTION.commodities,tags:['commodities','oil'],read:'3 min'}];}
+function showNoStories(){
+  document.getElementById('feed').innerHTML=`
+    <div class="no-stories">
+      <div class="no-stories-icon">📡</div>
+      <div class="no-stories-title">No stories in the last 24 hours</div>
+      <div class="no-stories-sub">All feeds are live but no articles published in the last 24h passed the filter.<br>Tap the refresh button to check again.</div>
+    </div>`;
+}
 
 function buildMorningBrief(){
   const now=new Date();const h=now.getHours();
   const session=h<9?'Pre-Market':h<16?'Market Hours':'After Hours';
-  document.getElementById('briefSub').textContent=`${session} · ${now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} · ${stories.length} stories`;
+  document.getElementById('briefSub').textContent=`${session} · ${now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} · ${stories.length} stories (24h)`;
   const top=stories.filter(s=>s.urg==='BREAKING'||s.urg==='HIGH').slice(0,3);
-  const themes=top.length>=3?top.map(s=>({text:`<b>${s.cat.toUpperCase()}</b> — ${s.title.slice(0,85)}`})):[{text:'<b>Fed uncertainty</b> — Rate path unclear as inflation stays above 2%'},{text:'<b>Energy markets</b> — Oil volatility from OPEC+ and geopolitical premium'},{text:'<b>AI capex</b> — Hyperscaler spending supports semiconductor demand'}];
+  const themes=top.length>=3
+    ?top.map(s=>({text:`<b>${s.cat.toUpperCase()}</b> — ${s.title.slice(0,85)}`}))
+    :[{text:'<b>Fed uncertainty</b> — Rate path unclear as inflation stays above 2%'},{text:'<b>Energy markets</b> — Oil volatility from OPEC+ and geopolitical premium'},{text:'<b>AI capex</b> — Hyperscaler spending supports semiconductor demand'}];
   document.getElementById('briefThemes').innerHTML=themes.map(t=>`<div class="brief-item"><span class="brief-bullet" style="color:#10b981">●</span><span class="brief-text">${t.text}</span></div>`).join('');
-  document.getElementById('briefEvents').innerHTML=[{name:'US CPI (MoM)',time:'08:30 ET',imp:'high'},{name:'Fed Speaker: Williams',time:'10:00 ET',imp:'high'},{name:'EIA Crude Inventory',time:'10:30 ET',imp:'med'},{name:'ECB Minutes',time:'07:30 ET',imp:'med'},{name:'30Y Treasury Auction',time:'13:00 ET',imp:'high'}].map(e=>`<div class="event-row"><span class="event-name">${e.name}</span><div style="display:flex;align-items:center;gap:5px"><span class="event-time">${e.time}</span><span class="event-imp ${e.imp==='high'?'imp-high':'imp-med'}">${e.imp.toUpperCase()}</span></div></div>`).join('');
-  document.getElementById('briefMoves').innerHTML=`<div class="brief-item"><span class="brief-bullet neg">●</span><span class="brief-text"><b>Asia:</b> Nikkei -1.2%, Hang Seng -0.8%. JPY strengthened on BoJ commentary.</span></div><div class="brief-item"><span class="brief-bullet neg">●</span><span class="brief-text"><b>Europe:</b> FTSE -0.4%, DAX -0.6%. Energy stocks leading declines.</span></div><div class="brief-item"><span class="brief-bullet pos">●</span><span class="brief-text"><b>Commodities:</b> Gold +0.8% safe haven bid. Oil -2.1% on supply concerns.</span></div>`;
+  document.getElementById('briefEvents').innerHTML=[
+    {name:'US CPI (MoM)',time:'08:30 ET',imp:'high'},
+    {name:'Fed Speaker: Williams',time:'10:00 ET',imp:'high'},
+    {name:'EIA Crude Inventory',time:'10:30 ET',imp:'med'},
+    {name:'ECB Minutes',time:'07:30 ET',imp:'med'},
+    {name:'30Y Treasury Auction',time:'13:00 ET',imp:'high'}
+  ].map(e=>`<div class="event-row"><span class="event-name">${e.name}</span><div style="display:flex;align-items:center;gap:5px"><span class="event-time">${e.time}</span><span class="event-imp ${e.imp==='high'?'imp-high':'imp-med'}">${e.imp.toUpperCase()}</span></div></div>`).join('');
+  document.getElementById('briefMoves').innerHTML=`
+    <div class="brief-item"><span class="brief-bullet neg">●</span><span class="brief-text"><b>Asia:</b> Nikkei -1.2%, Hang Seng -0.8%. JPY strengthened on BoJ commentary.</span></div>
+    <div class="brief-item"><span class="brief-bullet neg">●</span><span class="brief-text"><b>Europe:</b> FTSE -0.4%, DAX -0.6%. Energy stocks leading declines.</span></div>
+    <div class="brief-item"><span class="brief-bullet pos">●</span><span class="brief-text"><b>Commodities:</b> Gold +0.8% safe haven bid. Oil -2.1% on supply concerns.</span></div>`;
   const ct=detectChain(stories);
-  document.getElementById('briefWatch').innerHTML=(ct?[`<b>Chain reaction active:</b> ${CHAIN_MAPS[ct].trigger} — monitor connected assets above`,'<b>Credit spreads:</b> HY vs. IG widening — the leading recession indicator','<b>Options:</b> Check VIX term structure for near-term event risk']:['<b>Fed speakers:</b> Any deviation could reprice the rate path significantly','<b>Credit spreads:</b> HY vs. IG widening — the leading recession indicator','<b>DXY:</b> Dollar strength is the key cross-asset signal today']).map(w=>`<div class="brief-item"><span class="brief-bullet" style="color:#f59e0b">●</span><span class="brief-text">${w}</span></div>`).join('');
+  document.getElementById('briefWatch').innerHTML=(ct
+    ?[`<b>Chain reaction active:</b> ${CHAIN_MAPS[ct].trigger} — monitor connected assets above`,'<b>Credit spreads:</b> HY vs. IG widening — the leading recession indicator','<b>Options:</b> Check VIX term structure for near-term event risk']
+    :['<b>Fed speakers:</b> Any deviation could reprice the rate path significantly','<b>Credit spreads:</b> HY vs. IG widening — the leading recession indicator','<b>DXY:</b> Dollar strength is the key cross-asset signal today']
+  ).map(w=>`<div class="brief-item"><span class="brief-bullet" style="color:#f59e0b">●</span><span class="brief-text">${w}</span></div>`).join('');
 }
+
 function toggleBrief(){briefOpen=!briefOpen;document.getElementById('briefPanel').className='brief-panel'+(briefOpen?' open':'');document.getElementById('briefArr').textContent=briefOpen?'▾':'›';}
 
 function renderFeed(){
   const q=document.getElementById('srch').value.toLowerCase();
-  const fd=stories.filter(s=>{if(catF!=='all'&&s.cat!==catF)return false;if(urgF!=='all'&&s.urg!==urgF)return false;if(q)return s.title.toLowerCase().includes(q)||(s.desc||'').toLowerCase().includes(q)||s.tags.some(t=>t.includes(q));return true;});
+  const fd=stories.filter(s=>{
+    if(catF!=='all'&&s.cat!==catF)return false;
+    if(urgF!=='all'&&s.urg!==urgF)return false;
+    if(q)return s.title.toLowerCase().includes(q)||(s.desc||'').toLowerCase().includes(q)||s.tags.some(t=>t.includes(q));
+    return true;
+  });
+
   const ce=document.getElementById('storyCount');
-  if(stories.length>0){const brk=fd.filter(s=>s.urg==='BREAKING').length;const nw=fd.filter(s=>s.isNew).length;ce.innerHTML=`<span style="color:#475569">${fd.length} stories${nw?` · <span style="color:#3b82f6;font-weight:700">${nw} new</span>`:''}</span>${brk?`<span style="color:#ef4444;font-weight:800;animation:pulse 1.5s ease-in-out infinite">🚨 ${brk} BREAKING</span>`:''}`);}
+  if(stories.length>0){
+    const brk=fd.filter(s=>s.urg==='BREAKING').length;
+    const nw=fd.filter(s=>s.isNew).length;
+    const fr=fd.filter(s=>s.isFresh&&!s.isNew).length;
+    ce.innerHTML=`<span style="color:#475569">${fd.length} stories${nw?` · <span style="color:#3b82f6;font-weight:700">${nw} &lt;30m</span>`:''}${fr?` · <span style="color:#10b981;font-weight:600">${fr} &lt;1h</span>`:''}</span>${brk?`<span style="color:#ef4444;font-weight:800;animation:pulse 1.5s ease-in-out infinite">🚨 ${brk} BREAKING</span>`:''}`;
+  }
+
   const feed=document.getElementById('feed');
   if(!stories.length)return;
-  if(!fd.length){feed.innerHTML=`<div class="empty"><div class="empty-msg">No stories match — adjust filters</div></div>`;return;}
+  if(!fd.length){feed.innerHTML=`<div class="empty"><div class="empty-msg">No stories match — try adjusting filters</div></div>`;return;}
+
   feed.innerHTML=fd.map(s=>{
-    const cat=CATS.find(c=>c.id===s.cat)||CATS[0];const urg=URGS[s.urg]||URGS.LOW;const open=openId===s.id;const chain=s.chain?CHAIN_MAPS[s.chain]:null;const brk=s.urg==='BREAKING';
+    const cat=CATS.find(c=>c.id===s.cat)||CATS[0];
+    const urg=URGS[s.urg]||URGS.LOW;
+    const open=openId===s.id;
+    const chain=s.chain?CHAIN_MAPS[s.chain]:null;
+    const brk=s.urg==='BREAKING';
     return`<div class="card${open?' open':''}${brk?' is-breaking':''}${s.chain?' has-chain':''}" id="c${s.id}" onclick="toggle('${s.id}')" style="border-left:3px solid ${brk?'#dc2626':cat.color}">
-      ${brk?`<div class="glow" style="background:radial-gradient(circle at top right,rgba(220,38,38,.25),transparent)"></div>`:''}
+      ${brk?`<div class="glow" style="background:radial-gradient(circle at top right,rgba(220,38,38,.22),transparent)"></div>`:''}
       ${s.chain?`<div class="chain-badge">⛓ ${CHAIN_MAPS[s.chain].trigger}</div>`:''}
-      <div class="card-top"><div class="badges">
-        <span class="urg-bdg" style="background:${urg.bg};${urg.pulse?'animation:pulse 1.5s ease-in-out infinite':''}">${urg.label}</span>
-        <span class="cat-bdg" style="background:${cat.color}20;color:${cat.color}">${cat.icon} ${cat.label}</span>
-        ${s.isNew?'<span class="new-bdg">NEW</span>':''}
-        ${s.imp>=8?`<span style="background:rgba(220,38,38,.15);color:#fca5a5;font-size:7px;font-weight:800;padding:2px 5px;border-radius:3px">⚡ HIGH IMPACT</span>`:''}
-      </div><div class="card-meta"><span class="read-t">${s.read}</span><span class="ago-t" style="color:${brk?'#ef4444':'#475569'}">${s.ago}</span></div></div>
+      <div class="card-top">
+        <div class="badges">
+          <span class="urg-bdg" style="background:${urg.bg};${urg.pulse?'animation:pulse 1.5s ease-in-out infinite':''}">${urg.label}</span>
+          <span class="cat-bdg" style="background:${cat.color}20;color:${cat.color}">${cat.icon} ${cat.label}</span>
+          ${s.isNew?'<span class="new-bdg">⚡ NEW</span>':''}
+          ${s.isFresh&&!s.isNew?'<span class="fresh-bdg">✓ FRESH</span>':''}
+          ${s.imp>=8?`<span style="background:rgba(220,38,38,.12);color:#fca5a5;font-size:7px;font-weight:800;padding:2px 5px;border-radius:3px">HIGH IMPACT</span>`:''}
+        </div>
+        <div class="card-meta">
+          <span class="read-t">${s.read}</span>
+          <span class="ago-t" style="color:${brk?'#ef4444':s.isNew?'#3b82f6':'#475569'}">${s.ago}</span>
+        </div>
+      </div>
       <h3 class="headline">${s.title}</h3>
       <div class="src-line">via <span class="src-nm">${srcName(s.link)}</span></div>
       <p class="summary">${s.desc||'Tap for full hedge fund analysis.'}</p>
@@ -529,16 +677,29 @@ function buildFilters(){
 function setCat(id){catF=id;document.querySelectorAll('[id^="ca-"]').forEach(b=>{const bid=b.id.slice(3);const c=CATS.find(x=>x.id===bid);b.style.background=bid==='all'?(id==='all'?'rgba(59,130,246,.15)':''):(id===bid?c.color+'20':'');b.style.borderColor=bid==='all'?(id==='all'?'#3b82f6':'#1e293b'):(id===bid?c.color:'#1e293b');b.style.color=bid==='all'?(id==='all'?'#60a5fa':'#475569'):(id===bid?c.color:'#475569');});renderFeed();}
 function setUrg(id){urgF=id;document.querySelectorAll('[id^="ua-"]').forEach(b=>{const bid=b.id.slice(3);const u=URGS[bid];b.style.background=bid==='all'?(id==='all'?'rgba(59,130,246,.1)':'transparent'):(id===bid?u.bg+'18':'transparent');b.style.borderColor=bid==='all'?(id==='all'?'rgba(59,130,246,.4)':'rgba(30,41,59,.5)'):(id===bid?u.bg:'rgba(30,41,59,.5)');b.style.color=bid==='all'?(id==='all'?'#3b82f6':'#334155'):(id===bid?u.bg:'#334155');});renderFeed();}
 function buildSources(){const s=10;document.getElementById('srcTags').innerHTML=ALLSOURCES.slice(0,s).map(x=>`<span class="src-tag">${x}</span>`).join('');document.getElementById('srcMore').textContent=`+${ALLSOURCES.length-s} more`;}
+
 function updateClock(){
   const n=new Date();
   document.getElementById('clkTime').textContent=n.toLocaleTimeString('en-US',{hour12:false,timeZone:'UTC'});
   document.getElementById('clkDate').textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});
   countdown--;
-  if(countdown<=8){document.getElementById('refreshStatus').textContent=`🔄 Scanning in ${countdown}s`;document.getElementById('refreshStatus').style.color='#3b82f6';}
-  else{document.getElementById('refreshStatus').textContent=`Next scan in ${countdown}s`;document.getElementById('refreshStatus').style.color='#334155';}
+  if(countdown<=8){
+    document.getElementById('refreshStatus').textContent=`🔄 Scanning in ${countdown}s`;
+    document.getElementById('refreshStatus').style.color='#3b82f6';
+  } else {
+    document.getElementById('refreshStatus').textContent=`Next scan in ${countdown}s`;
+    document.getElementById('refreshStatus').style.color='#334155';
+  }
   if(countdown<=0&&!isFetching)fetchFeeds();
 }
-async function manualRefresh(){countdown=0;const fab=document.getElementById('fab');fab.classList.add('spinning');await fetchFeeds();fab.classList.remove('spinning');}
+
+async function manualRefresh(){
+  countdown=0;
+  const fab=document.getElementById('fab');
+  fab.classList.add('spinning');
+  await fetchFeeds();
+  fab.classList.remove('spinning');
+}
 
 buildSources();buildFilters();updateClock();
 setInterval(updateClock,1000);
