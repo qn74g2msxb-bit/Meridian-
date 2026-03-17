@@ -12,11 +12,14 @@
 body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;min-height:100vh;overflow-x:hidden;font-size:15px}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes liveDot{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}60%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
-@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes alertSlide{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+@keyframes alertPulse{0%,100%{border-color:rgba(220,38,38,.6)}50%{border-color:rgba(220,38,38,1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
 
+/* HEADER */
 .hdr{background:#0a1020;border-bottom:1px solid rgba(59,130,246,0.18);padding:14px 16px 11px;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
 .hdr-row{display:flex;justify-content:space-between;align-items:center}
 .logo{font-size:18px;font-weight:900;color:#60a5fa;letter-spacing:-.02em}
@@ -27,8 +30,37 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .clk-time{color:#94a3b8;font-size:12px;font-weight:600}
 .clk-date{color:#475569;font-size:9px;text-align:right}
 .brk-alert{color:#ef4444;font-size:9px;font-weight:800;animation:pulse 1.5s ease-in-out infinite;text-align:right;min-height:13px}
+.refresh-status{color:#334155;font-size:8px;text-align:right;margin-top:1px}
 
-/* MORNING BRIEF BUTTON */
+/* BREAKING ALERT BANNER - appears at top when breaking news detected */
+.breaking-banner{display:none;background:linear-gradient(135deg,#1a0a0a,#200808);border:1px solid rgba(220,38,38,.5);border-left:4px solid #dc2626;padding:12px 14px;margin:8px 14px 0;border-radius:10px;animation:alertSlide .4s ease,alertPulse 2s ease-in-out infinite;cursor:pointer;position:relative}
+.breaking-banner.show{display:block}
+.bb-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.bb-icon{font-size:14px;animation:shake 1s ease-in-out infinite}
+.bb-label{color:#ef4444;font-size:10px;font-weight:800;letter-spacing:.1em}
+.bb-count{background:#dc2626;color:#fff;font-size:9px;font-weight:800;padding:1px 6px;border-radius:10px}
+.bb-time{color:#7f1d1d;font-size:8px;margin-left:auto}
+.bb-close{position:absolute;top:8px;right:10px;color:#475569;font-size:16px;cursor:pointer;padding:0 4px}
+.bb-stories{display:flex;flex-direction:column;gap:6px}
+.bb-story{background:rgba(220,38,38,.08);border-radius:6px;padding:8px 10px}
+.bb-s-title{color:#fca5a5;font-size:12px;font-weight:700;line-height:1.3;margin-bottom:3px}
+.bb-s-meta{display:flex;align-items:center;gap:6px}
+.bb-s-cat{font-size:8px;font-weight:800;padding:1px 6px;border-radius:3px}
+.bb-s-ago{color:#7f1d1d;font-size:8px}
+.bb-tap{color:#ef4444;font-size:9px;margin-top:6px;font-weight:600}
+
+/* TOAST NOTIFICATION - pops up for new breaking news */
+.toast-container{position:fixed;top:0;left:0;right:0;z-index:1000;padding:8px 14px;pointer-events:none}
+.toast{background:linear-gradient(135deg,#1a0505,#1f0808);border:1px solid #dc2626;border-left:4px solid #ef4444;border-radius:10px;padding:12px 14px;margin-bottom:8px;animation:alertSlide .3s ease;pointer-events:all;cursor:pointer;box-shadow:0 4px 20px rgba(239,68,68,.3)}
+.toast-inner{display:flex;gap:10px;align-items:flex-start}
+.toast-icon{font-size:16px;flex-shrink:0;animation:shake .8s ease-in-out}
+.toast-body{flex:1}
+.toast-label{color:#ef4444;font-size:9px;font-weight:800;letter-spacing:.1em;margin-bottom:3px}
+.toast-title{color:#fca5a5;font-size:12px;font-weight:700;line-height:1.35}
+.toast-sub{color:#7f1d1d;font-size:9px;margin-top:3px}
+.toast-close{color:#475569;font-size:16px;flex-shrink:0;padding:0 2px}
+
+/* BRIEF BUTTON */
 .brief-btn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(245,158,11,.08));border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:10px 14px;margin:10px 14px 0;cursor:pointer;transition:all .2s}
 .brief-btn:active{transform:scale(.98)}
 .brief-icon{font-size:16px}
@@ -37,9 +69,8 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .brief-sub{color:#78350f;font-size:9px;margin-top:1px}
 .brief-arr{color:#f59e0b;font-size:14px}
 
-/* MORNING BRIEF PANEL */
-.brief-panel{margin:10px 14px;background:linear-gradient(135deg,#0d1a0a,#0a1510);border:1px solid rgba(16,185,129,.25);border-radius:12px;padding:16px;animation:slideDown .3s ease;display:none}
-.brief-panel.open{display:block}
+.brief-panel{margin:10px 14px;background:linear-gradient(135deg,#0d1a0a,#0a1510);border:1px solid rgba(16,185,129,.25);border-radius:12px;padding:16px;display:none}
+.brief-panel.open{display:block;animation:slideDown .3s ease}
 .brief-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .brief-h-title{color:#10b981;font-size:12px;font-weight:800;letter-spacing:.06em}
 .brief-close{color:#475569;font-size:18px;cursor:pointer;padding:0 4px}
@@ -59,8 +90,8 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .imp-high{background:rgba(239,68,68,.15);color:#ef4444}
 .imp-med{background:rgba(245,158,11,.15);color:#f59e0b}
 
-/* CHAIN REACTION */
-.chain-banner{margin:8px 14px 0;background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(239,68,68,.05));border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:10px 14px;animation:slideDown .3s ease;display:none}
+/* CHAIN BANNER */
+.chain-banner{margin:8px 14px 0;background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(239,68,68,.05));border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:10px 14px;display:none}
 .chain-banner.show{display:block}
 .chain-title{color:#ef4444;font-size:9px;font-weight:800;letter-spacing:.08em;margin-bottom:8px}
 .chain-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
@@ -69,14 +100,7 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .chain-move{font-size:11px;font-weight:700}
 .chain-desc{color:#475569;font-size:9px;margin-top:2px;line-height:1.4}
 
-.ticker-wrap{background:#07090f;border-bottom:1px solid rgba(59,130,246,.1);overflow:hidden;padding:8px 0}
-.ticker-track{display:flex;gap:22px;white-space:nowrap;animation:tickerScroll 55s linear infinite;width:fit-content}
-.t-item{display:flex;align-items:center;gap:5px}
-.t-sym{color:#334155;font-size:9px;font-weight:800;letter-spacing:.07em}
-.t-val{color:#cbd5e1;font-size:10px;font-weight:600}
-.t-chg{font-size:9px;font-weight:700}
-.neg{color:#ef4444}.pos{color:#10b981}
-
+/* CONTROLS */
 .ctrl{padding:12px 14px 8px}
 .srch{width:100%;background:#0d1626;border:1px solid #1e293b;border-radius:9px;padding:11px 14px;color:#e2e8f0;font-size:14px;outline:none;margin-bottom:10px;-webkit-appearance:none}
 .srch::placeholder{color:#334155}
@@ -87,6 +111,7 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .urow{display:flex;gap:5px;flex-wrap:wrap}
 .ubtn{flex-shrink:0;border:1px solid rgba(30,41,59,.5);border-radius:6px;background:transparent;color:#334155;font-size:9px;font-weight:700;padding:4px 10px;cursor:pointer;letter-spacing:.04em;-webkit-appearance:none;transition:all .15s}
 
+.story-count{color:#334155;font-size:9px;padding:0 14px 8px;display:flex;justify-content:space-between;align-items:center}
 .src-bar{margin:0 14px 12px;background:rgba(11,17,32,.6);border:1px solid rgba(30,41,59,.3);border-radius:7px;padding:7px 12px;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}
 .src-bar::-webkit-scrollbar{display:none}
 .src-lbl{color:#1e293b;font-size:8px;font-weight:800;letter-spacing:.08em;flex-shrink:0}
@@ -94,26 +119,30 @@ body{background:#060a13;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFo
 .src-tag{color:#334155;font-size:8px;background:rgba(30,41,59,.6);padding:2px 7px;border-radius:3px;white-space:nowrap;font-weight:600}
 .src-more{color:#3b82f6;font-size:8px;font-weight:700;white-space:nowrap;flex-shrink:0}
 
+/* FEED */
 .feed{padding:0 14px 80px;display:flex;flex-direction:column;gap:10px}
-
 .loading-wrap{text-align:center;padding:50px 20px}
 .spinner{width:26px;height:26px;border:2px solid #1e293b;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
 .load-msg{color:#334155;font-size:13px}
 .load-sub{color:#1e293b;font-size:11px;margin-top:4px}
 
+/* CARDS */
 .card{background:#0b1120;border:1px solid rgba(30,41,59,.6);border-radius:11px;padding:15px 16px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden;animation:fadeIn .3s ease}
 .card.open{background:linear-gradient(160deg,#0e1830,#0b1525)}
-.card.affects-book{border-top:2px solid #f59e0b}
-.affects-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:2px 7px;font-size:8px;font-weight:800;color:#f59e0b;letter-spacing:.05em;margin-bottom:8px}
+.card.is-breaking{border:1px solid rgba(220,38,38,.4);border-left:3px solid #dc2626;background:linear-gradient(135deg,#0f0a0a,#120808)}
+.card.has-chain{border-top:2px solid rgba(245,158,11,.4)}
+.chain-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);border-radius:4px;padding:2px 7px;font-size:8px;font-weight:800;color:#f59e0b;letter-spacing:.05em;margin-bottom:8px}
 .glow{position:absolute;top:0;right:0;width:70px;height:70px;pointer-events:none}
 .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px;gap:6px}
 .badges{display:flex;gap:5px;align-items:center;flex-wrap:wrap;flex:1}
 .urg-bdg{color:#fff;font-size:8px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:.07em;white-space:nowrap}
 .cat-bdg{font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.new-bdg{background:#1d4ed8;color:#fff;font-size:8px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:.05em;animation:pulse 2s ease-in-out infinite}
 .card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0}
 .read-t{color:#334155;font-size:8px}
 .ago-t{font-size:9px;font-weight:600}
 h3.headline{color:#f1f5f9;font-size:14px;font-weight:700;line-height:1.38;margin:0 0 5px}
+.card.is-breaking h3.headline{color:#fca5a5}
 .src-line{color:#334155;font-size:9px;margin-bottom:7px}
 .src-nm{color:#64748b;font-weight:600}
 .summary{color:#64748b;font-size:12.5px;line-height:1.6}
@@ -131,7 +160,7 @@ h3.headline{color:#f1f5f9;font-size:14px;font-weight:700;line-height:1.38;margin
 .cons-row{display:flex;gap:7px;align-items:flex-start;margin-bottom:7px}
 .cons-row:last-child{margin-bottom:0}
 .cbul{flex-shrink:0;font-size:6px;margin-top:5px}
-.chain-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.chain-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 .chain-detail-item{background:rgba(15,23,42,.8);border-radius:6px;padding:8px}
 .cdi-asset{color:#64748b;font-size:8px;font-weight:800;letter-spacing:.05em}
 .cdi-move{font-size:11px;font-weight:700;margin:2px 0}
@@ -144,15 +173,19 @@ h3.headline{color:#f1f5f9;font-size:14px;font-weight:700;line-height:1.38;margin
 .empty-icon{font-size:28px;margin-bottom:10px}
 .empty-msg{font-size:13px;font-weight:600;color:#334155}
 
-.refresh-fab{position:fixed;bottom:28px;right:18px;background:#3b82f6;color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;cursor:pointer;box-shadow:0 4px 18px rgba(59,130,246,.35);z-index:300;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.refresh-fab{position:fixed;bottom:28px;right:18px;background:#3b82f6;color:#fff;border:none;border-radius:50%;width:48px;height:48px;cursor:pointer;box-shadow:0 4px 18px rgba(59,130,246,.35);z-index:300;display:flex;align-items:center;justify-content:center;transition:transform .15s}
 .refresh-fab:active{transform:scale(.9)}
 .refresh-fab.spinning svg{animation:spin .6s linear infinite}
 
 .footer{padding:12px 14px;border-top:1px solid rgba(30,41,59,.2);text-align:center}
 .footer p{color:#111827;font-size:8px;line-height:1.7}
+.neg{color:#ef4444}.pos{color:#10b981}
 </style>
 </head>
 <body>
+
+<!-- TOAST CONTAINER for pop-up alerts -->
+<div class="toast-container" id="toastContainer"></div>
 
 <div class="hdr">
   <div class="hdr-row">
@@ -167,11 +200,25 @@ h3.headline{color:#f1f5f9;font-size:14px;font-weight:700;line-height:1.38;margin
       <div class="clk-time" id="clkTime">--:--:--</div>
       <div class="clk-date" id="clkDate"></div>
       <div class="brk-alert" id="brkAlert"></div>
+      <div class="refresh-status" id="refreshStatus">Refreshes every 90s</div>
     </div>
   </div>
 </div>
 
-<!-- MORNING BRIEF BUTTON -->
+<!-- BREAKING NEWS BANNER -->
+<div class="breaking-banner" id="breakingBanner">
+  <div class="bb-close" onclick="closeBanner()">×</div>
+  <div class="bb-header">
+    <span class="bb-icon">🚨</span>
+    <span class="bb-label">BREAKING NEWS ALERT</span>
+    <span class="bb-count" id="bbCount">0</span>
+    <span class="bb-time" id="bbTime"></span>
+  </div>
+  <div class="bb-stories" id="bbStories"></div>
+  <div class="bb-tap">↓ Tap any story below for full hedge fund analysis</div>
+</div>
+
+<!-- MORNING BRIEF -->
 <div class="brief-btn" onclick="toggleBrief()">
   <span class="brief-icon">☀️</span>
   <div class="brief-label">
@@ -181,55 +228,53 @@ h3.headline{color:#f1f5f9;font-size:14px;font-weight:700;line-height:1.38;margin
   <span class="brief-arr" id="briefArr">›</span>
 </div>
 
-<!-- MORNING BRIEF PANEL -->
 <div class="brief-panel" id="briefPanel">
   <div class="brief-header">
     <span class="brief-h-title">☀️ PRE-MARKET INTELLIGENCE BRIEF</span>
     <span class="brief-close" onclick="toggleBrief()">×</span>
   </div>
-
   <div class="brief-section">
     <div class="brief-s-title">🌍 TOP 3 MACRO THEMES RIGHT NOW</div>
     <div id="briefThemes"></div>
   </div>
-
   <div class="brief-section">
     <div class="brief-s-title">📊 KEY DATA & EVENTS TODAY</div>
     <div id="briefEvents"></div>
   </div>
-
   <div class="brief-section">
     <div class="brief-s-title">⚡ OVERNIGHT MARKET MOVES</div>
     <div id="briefMoves"></div>
   </div>
-
   <div class="brief-section">
     <div class="brief-s-title">🎯 WHAT TO WATCH TODAY</div>
     <div id="briefWatch"></div>
   </div>
 </div>
 
-<!-- CHAIN REACTION BANNER -->
+<!-- CHAIN REACTION -->
 <div class="chain-banner" id="chainBanner">
   <div class="chain-title">⛓ CHAIN REACTION DETECTED — <span id="chainTrigger"></span></div>
   <div class="chain-grid" id="chainGrid"></div>
 </div>
 
-<div class="ticker-wrap"><div class="ticker-track" id="ticker"></div></div>
 <div class="ctrl">
   <input class="srch" id="srch" type="search" placeholder='Search: "fed" "oil" "ai" "china"…' oninput="renderFeed()">
   <div class="frow" id="catBtns"></div>
   <div class="urow" id="urgBtns"></div>
 </div>
+
+<div class="story-count" id="storyCount"></div>
+
 <div class="src-bar">
   <span class="src-lbl">SOURCES</span>
   <div class="src-tags" id="srcTags"></div>
   <span class="src-more" id="srcMore"></span>
 </div>
-<div class="feed" id="feed"></div>
-<div class="footer"><p>MERIDIAN INTELLIGENCE · Institutional use only · Not investment advice · Auto-refreshes every 5 min</p></div>
 
-<button class="refresh-fab" id="fab" onclick="manualRefresh()" title="Refresh now">
+<div class="feed" id="feed"></div>
+<div class="footer"><p>MERIDIAN INTELLIGENCE · Institutional use only · Not investment advice · Refreshes every 90s · <span id="lastRefresh"></span></p></div>
+
+<button class="refresh-fab" id="fab" onclick="manualRefresh()">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
 </button>
 
@@ -250,64 +295,19 @@ const URGS={
   MEDIUM:{label:'NOTABLE',bg:'#b45309',pulse:false},
   LOW:{label:'MONITOR',bg:'#374151',pulse:false},
 };
-const MKTDATA=[
-  {s:'SPX',v:'5,142',c:'-1.23%',n:true},{s:'NDX',v:'17,891',c:'-1.67%',n:true},
-  {s:'DXY',v:'103.4',c:'+0.34%',n:false},{s:'10Y UST',v:'4.52%',c:'+8bp',n:true},
-  {s:'WTI',v:'$68.1',c:'-6.82%',n:true},{s:'GOLD',v:'$2,284',c:'+1.14%',n:false},
-  {s:'USD/JPY',v:'142.2',c:'-3.21%',n:true},{s:'VIX',v:'24.67',c:'+18.4%',n:true},
-  {s:'BTC',v:'$67.4k',c:'-2.31%',n:true},{s:'EUR/USD',v:'1.1084',c:'+0.52%',n:false},
-  {s:'BRENT',v:'$74.2',c:'-5.9%',n:true},{s:'SILVER',v:'$28.4',c:'+0.8%',n:false},
-];
-const ALLSOURCES=['Bloomberg','Reuters','Financial Times','WSJ','CNBC','The Economist','Nikkei Asia','S&P Global','Moody\'s','Goldman Sachs','JP Morgan','ECB','Federal Reserve','IMF','BIS','AP','BBC World','Al Jazeera','Fitch','Bank of England','Morgan Stanley','MarketWatch','NYT Business','Investing.com'];
-
-// CHAIN REACTION MAPS
+const ALLSOURCES=['Bloomberg','Reuters','Financial Times','WSJ','CNBC','The Economist','Nikkei Asia','S&P Global',"Moody's",'Goldman Sachs','JP Morgan','ECB','Federal Reserve','IMF','BIS','AP','BBC World','Al Jazeera','Fitch','Bank of England','Morgan Stanley','MarketWatch','NYT Business','Investing.com'];
 const CHAIN_MAPS={
-  oil:{trigger:'OIL PRICE SHOCK',items:[
-    {asset:'AIRLINES',move:'+4-6%',dir:'pos',desc:'Fuel cost relief boosts margins'},
-    {asset:'USD/RUB',move:'+8-12%',dir:'neg',desc:'Petro-state FX under pressure'},
-    {asset:'HY ENERGY',move:'-3-5%',dir:'neg',desc:'Shale breakevens threatened'},
-    {asset:'INFLATION',move:'-0.3%',dir:'pos',desc:'CPI relief in 4-6 weeks'},
-    {asset:'TRANSPORTS',move:'+3-4%',dir:'pos',desc:'Lower operating costs'},
-    {asset:'EM BONDS',move:'-2-3%',dir:'neg',desc:'Oil exporters face pressure'},
-  ]},
-  fed:{trigger:'FED POLICY SHIFT',items:[
-    {asset:'TLT (BONDS)',move:'+3-5%',dir:'pos',desc:'Duration rally on rate cut'},
-    {asset:'USD/DXY',move:'-1.5%',dir:'neg',desc:'Dollar weakens on dovish pivot'},
-    {asset:'GOLD',move:'+2-3%',dir:'pos',desc:'Real yields fall, gold rises'},
-    {asset:'BANK STOCKS',move:'-3-4%',dir:'neg',desc:'NIM compression risk'},
-    {asset:'GROWTH/TECH',move:'+4-6%',dir:'pos',desc:'Discount rate re-rating'},
-    {asset:'EM FX',move:'+2%',dir:'pos',desc:'Capital flows back to EM'},
-  ]},
-  china:{trigger:'CHINA MARKET EVENT',items:[
-    {asset:'COPPER',move:'-3-5%',dir:'neg',desc:'Largest consumer demand risk'},
-    {asset:'LUXURY',move:'-5-7%',dir:'neg',desc:'30% of sales from China'},
-    {asset:'AUD/USD',move:'-2-3%',dir:'neg',desc:'China commodity proxy'},
-    {asset:'SEMIS',move:'-4-6%',dir:'neg',desc:'Supply chain disruption'},
-    {asset:'RARE EARTHS',move:'+15%',dir:'pos',desc:'Export restriction risk'},
-    {asset:'US TREASURIES',move:'+1-2%',dir:'pos',desc:'Safe haven bid'},
-  ]},
-  rates:{trigger:'INTEREST RATE MOVE',items:[
-    {asset:'REITs',move:'-4-6%',dir:'neg',desc:'Cap rate expansion pressure'},
-    {asset:'UTILITIES',move:'-3-4%',dir:'neg',desc:'Yield proxy re-pricing'},
-    {asset:'BANKS',move:'+3-5%',dir:'pos',desc:'NIM expansion benefit'},
-    {asset:'MORTGAGES',move:'-2%',dir:'neg',desc:'30Y rate follows higher'},
-    {asset:'VALUE vs GROWTH',move:'+5%',dir:'pos',desc:'Duration rotation to value'},
-    {asset:'USD',move:'+1-2%',dir:'pos',desc:'Rate differential widens'},
-  ]},
-  geopolitics:{trigger:'GEOPOLITICAL ESCALATION',items:[
-    {asset:'GOLD',move:'+3-5%',dir:'pos',desc:'Safe haven demand surge'},
-    {asset:'VIX',move:'+25-40%',dir:'neg',desc:'Fear gauge spikes'},
-    {asset:'OIL',move:'+5-8%',dir:'neg',desc:'Supply disruption premium'},
-    {asset:'DEFENSE',move:'+4-6%',dir:'pos',desc:'Spending increase expected'},
-    {asset:'EM ASSETS',move:'-5-8%',dir:'neg',desc:'Risk-off flight to safety'},
-    {asset:'USD/JPY',move:'-3-4%',dir:'pos',desc:'Yen safe haven bid'},
-  ]},
+  oil:{trigger:'OIL PRICE SHOCK',items:[{asset:'AIRLINES',move:'+4-6%',dir:'pos',desc:'Fuel cost relief boosts margins'},{asset:'USD/RUB',move:'+8-12%',dir:'neg',desc:'Petro-state FX under pressure'},{asset:'HY ENERGY',move:'-3-5%',dir:'neg',desc:'Shale breakevens threatened'},{asset:'INFLATION',move:'-0.3%',dir:'pos',desc:'CPI relief in 4-6 weeks'},{asset:'TRANSPORTS',move:'+3-4%',dir:'pos',desc:'Lower operating costs'},{asset:'EM BONDS',move:'-2-3%',dir:'neg',desc:'Oil exporters face pressure'}]},
+  fed:{trigger:'FED POLICY SHIFT',items:[{asset:'TLT BONDS',move:'+3-5%',dir:'pos',desc:'Duration rally on rate cut'},{asset:'USD/DXY',move:'-1.5%',dir:'neg',desc:'Dollar weakens on dovish pivot'},{asset:'GOLD',move:'+2-3%',dir:'pos',desc:'Real yields fall, gold rises'},{asset:'BANK STOCKS',move:'-3-4%',dir:'neg',desc:'NIM compression risk'},{asset:'GROWTH/TECH',move:'+4-6%',dir:'pos',desc:'Discount rate re-rating'},{asset:'EM FX',move:'+2%',dir:'pos',desc:'Capital flows back to EM'}]},
+  china:{trigger:'CHINA MARKET EVENT',items:[{asset:'COPPER',move:'-3-5%',dir:'neg',desc:'Largest consumer demand risk'},{asset:'LUXURY',move:'-5-7%',dir:'neg',desc:'30% of sales from China'},{asset:'AUD/USD',move:'-2-3%',dir:'neg',desc:'China commodity proxy'},{asset:'SEMIS',move:'-4-6%',dir:'neg',desc:'Supply chain disruption'},{asset:'RARE EARTHS',move:'+15%',dir:'pos',desc:'Export restriction risk'},{asset:'US TREASURIES',move:'+1-2%',dir:'pos',desc:'Safe haven bid'}]},
+  rates:{trigger:'INTEREST RATE MOVE',items:[{asset:'REITs',move:'-4-6%',dir:'neg',desc:'Cap rate expansion pressure'},{asset:'UTILITIES',move:'-3-4%',dir:'neg',desc:'Yield proxy re-pricing'},{asset:'BANKS',move:'+3-5%',dir:'pos',desc:'NIM expansion benefit'},{asset:'MORTGAGES',move:'-2%',dir:'neg',desc:'30Y rate follows higher'},{asset:'VALUE/GROWTH',move:'+5%',dir:'pos',desc:'Duration rotation to value'},{asset:'USD',move:'+1-2%',dir:'pos',desc:'Rate differential widens'}]},
+  geopolitics:{trigger:'GEOPOLITICAL ESCALATION',items:[{asset:'GOLD',move:'+3-5%',dir:'pos',desc:'Safe haven demand surge'},{asset:'VIX',move:'+25-40%',dir:'neg',desc:'Fear gauge spikes'},{asset:'OIL',move:'+5-8%',dir:'neg',desc:'Supply disruption premium'},{asset:'DEFENSE',move:'+4-6%',dir:'pos',desc:'Spending increase expected'},{asset:'EM ASSETS',move:'-5-8%',dir:'neg',desc:'Risk-off flight to safety'},{asset:'USD/JPY',move:'-3-4%',dir:'pos',desc:'Yen safe haven bid'}]},
 };
-
 const RSS=[
   {u:'https://feeds.reuters.com/reuters/businessNews',c:'macro'},
   {u:'https://feeds.reuters.com/reuters/technologyNews',c:'tech'},
   {u:'https://feeds.reuters.com/reuters/companyNews',c:'equities'},
+  {u:'https://feeds.reuters.com/reuters/worldNews',c:'geopolitics'},
   {u:'https://www.cnbc.com/id/100003114/device/rss/rss.html',c:'equities'},
   {u:'https://www.cnbc.com/id/10000664/device/rss/rss.html',c:'tech'},
   {u:'https://www.cnbc.com/id/20910258/device/rss/rss.html',c:'macro'},
@@ -321,11 +321,124 @@ const RSS=[
   {u:'https://www.investing.com/rss/news_25.rss',c:'commodities'},
   {u:'https://www.investing.com/rss/news_14.rss',c:'fx'},
   {u:'https://www.investing.com/rss/news_96.rss',c:'fx'},
+  {u:'https://feeds.reuters.com/reuters/financialNews',c:'credit'},
 ];
 const PROXY='https://api.allorigins.win/get?url=';
+const MAX_PER_FEED=15;
+let stories=[],catF='all',urgF='all',openId=null,briefOpen=false,countdown=90;
+let seenBreaking=new Set(); // tracks breaking stories already alerted
+let isFirstLoad=true;
 
-let stories=[], catF='all', urgF='all', openId=null, briefOpen=false;
+// ─── BREAKING ALERT SYSTEM ────────────────────────────────────────────────────
+function scoreBreakingImportance(title,desc){
+  const t=(title+' '+desc).toLowerCase();
+  let score=0;
+  // Highest severity
+  if(/emergency|collapse|crash|crisis|default|war declared|attack on|explosion|halt trading|circuit breaker|emergency rate/i.test(t))score+=10;
+  // High severity
+  if(/breaking|urgent|plunge|surge|soar|tumble|shock|ban|sanctions|invasion|assassin/i.test(t))score+=6;
+  // Market moving
+  if(/federal reserve|ecb|bank of japan|rate cut|rate hike|gdp|cpi|inflation|recession|opec|central bank/i.test(t))score+=4;
+  // Significant
+  if(/billion|trillion|merger|acquisition|ipo|earnings|beat|miss|guidance|forecast/i.test(t))score+=2;
+  return score;
+}
 
+function showBreakingBanner(breakingStories){
+  if(!breakingStories.length)return;
+  const banner=document.getElementById('breakingBanner');
+  document.getElementById('bbCount').textContent=breakingStories.length;
+  document.getElementById('bbTime').textContent=`Detected ${new Date().toLocaleTimeString('en-US',{hour12:false,timeZone:'UTC'})} UTC`;
+  document.getElementById('bbStories').innerHTML=breakingStories.slice(0,4).map(s=>{
+    const cat=CATS.find(c=>c.id===s.cat)||CATS[0];
+    return`<div class="bb-story" onclick="jumpToStory('${s.id}')">
+      <div class="bb-s-title">${s.title}</div>
+      <div class="bb-s-meta">
+        <span class="bb-s-cat" style="background:${cat.color}22;color:${cat.color}">${cat.icon} ${cat.label}</span>
+        <span class="bb-s-ago">${s.ago}</span>
+        <span style="color:#7f1d1d;font-size:8px;margin-left:auto">Importance: ${'●'.repeat(Math.min(5,Math.floor(s.importance/3)+1))}${'○'.repeat(5-Math.min(5,Math.floor(s.importance/3)+1))}</span>
+      </div>
+    </div>`;
+  }).join('');
+  banner.classList.add('show');
+}
+
+function showToast(story){
+  const container=document.getElementById('toastContainer');
+  const cat=CATS.find(c=>c.id===story.cat)||CATS[0];
+  const id='toast-'+story.id;
+  const div=document.createElement('div');
+  div.className='toast';
+  div.id=id;
+  div.innerHTML=`<div class="toast-inner">
+    <span class="toast-icon">🚨</span>
+    <div class="toast-body">
+      <div class="toast-label">🔴 BREAKING — ${cat.icon} ${cat.label.toUpperCase()}</div>
+      <div class="toast-title">${story.title}</div>
+      <div class="toast-sub">Importance score: ${story.importance}/10 · Tap to read full analysis</div>
+    </div>
+    <span class="toast-close" onclick="dismissToast('${id}')">×</span>
+  </div>`;
+  div.onclick=(e)=>{if(!e.target.classList.contains('toast-close')){dismissToast(id);jumpToStory(story.id);}};
+  container.appendChild(div);
+  // Vibrate if supported
+  if(navigator.vibrate)navigator.vibrate([200,100,200]);
+  // Auto dismiss after 8 seconds
+  setTimeout(()=>dismissToast(id),8000);
+}
+
+function dismissToast(id){
+  const el=document.getElementById(id);
+  if(el){el.style.opacity='0';el.style.transform='translateX(100%)';el.style.transition='all .3s ease';setTimeout(()=>el.remove(),300);}
+}
+
+function closeBanner(){document.getElementById('breakingBanner').classList.remove('show');}
+
+function jumpToStory(id){
+  openId=id;
+  catF='all';urgF='all';
+  document.getElementById('srch').value='';
+  renderFeed();
+  setTimeout(()=>{const el=document.getElementById('c'+id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}},100);
+}
+
+function processBreakingAlerts(newStories){
+  // Score every story
+  newStories.forEach(s=>{s.importance=scoreBreakingImportance(s.title,s.desc||'');});
+  
+  // Find stories that score high enough to be flagged as breaking
+  const highImportance=newStories.filter(s=>s.importance>=4&&s.urg==='BREAKING');
+  const alsoHigh=newStories.filter(s=>s.importance>=8&&s.urg==='HIGH');
+  const breaking=[...highImportance,...alsoHigh].sort((a,b)=>b.importance-a.importance);
+
+  // Mark new ones we haven't seen
+  const newBreaking=breaking.filter(s=>!seenBreaking.has(s.title.slice(0,50)));
+  
+  if(newBreaking.length>0){
+    // Show banner with all current breaking
+    showBreakingBanner(breaking);
+    
+    // Show toast for each new breaking story (up to 3)
+    if(!isFirstLoad){
+      newBreaking.slice(0,3).forEach((s,i)=>{
+        setTimeout(()=>showToast(s),i*800);
+      });
+    } else {
+      // On first load, show one toast for most important
+      if(newBreaking.length>0){
+        setTimeout(()=>showToast(newBreaking[0]),1500);
+      }
+    }
+    
+    // Mark as seen
+    newBreaking.forEach(s=>seenBreaking.add(s.title.slice(0,50)));
+  }
+
+  isFirstLoad=false;
+  return newStories;
+}
+
+// ─── CLASSIFY & SCORE ────────────────────────────────────────────────────────
 function classifyCat(t,d,def){
   const s=(t+' '+d).toLowerCase();
   if(/bitcoin|crypto|ethereum|binance|coinbase|defi|blockchain|nft|forex|eur\/usd|gbp|yen|yuan|usd\//i.test(s))return'fx';
@@ -338,7 +451,6 @@ function classifyCat(t,d,def){
   if(/private equity|hedge fund|blackstone|kkr|reit|real estate|alternatives|infrastructure|pension/i.test(s))return'alts';
   return def||'macro';
 }
-
 function scoreUrg(t,d){
   const s=(t+' '+d).toLowerCase();
   if(/breaking|urgent|emergency|crash|collapse|crisis|plunge|surge|shock|halt|default|war|attack/i.test(s))return'BREAKING';
@@ -346,242 +458,129 @@ function scoreUrg(t,d){
   if(/report|data|forecast|outlook|quarter|growth|decline|concern/i.test(s))return'MEDIUM';
   return'LOW';
 }
-
-function detectChain(stories){
-  const top=stories.slice(0,8);
-  const txt=top.map(s=>s.title+' '+s.desc).join(' ').toLowerCase();
-  if(/oil|crude|brent|opec|barrel/i.test(txt))return'oil';
-  if(/fed|federal reserve|rate cut|rate hike|powell|fomc/i.test(txt))return'fed';
-  if(/china|beijing|xi jinping|yuan|cny|hong kong/i.test(txt))return'china';
-  if(/interest rate|yield|treasury|bond|rate|hike|cut/i.test(txt))return'rates';
-  if(/war|sanction|conflict|attack|military|nato|ukraine|iran|taiwan/i.test(txt))return'geopolitics';
+function getChain(t,d){
+  const s=(t+' '+d).toLowerCase();
+  if(/oil|crude|brent|opec/i.test(s))return'oil';
+  if(/fed|federal reserve|rate cut|fomc|powell/i.test(s))return'fed';
+  if(/china|yuan|beijing|xi jinping/i.test(s))return'china';
+  if(/interest rate|yield curve|treasury bond/i.test(s))return'rates';
+  if(/war|sanction|conflict|military|attack/i.test(s))return'geopolitics';
   return null;
 }
-
+function detectChain(s){
+  const txt=s.slice(0,10).map(x=>x.title+' '+(x.desc||'')).join(' ').toLowerCase();
+  if(/oil|crude|brent|opec|barrel/i.test(txt))return'oil';
+  if(/fed|federal reserve|rate cut|rate hike|powell|fomc/i.test(txt))return'fed';
+  if(/china|beijing|xi jinping|yuan|cny/i.test(txt))return'china';
+  if(/interest rate|yield|treasury|bond.*rate/i.test(txt))return'rates';
+  if(/war|sanction|conflict|attack|military|nato/i.test(txt))return'geopolitics';
+  return null;
+}
 function showChainReaction(type){
-  const chain=CHAIN_MAPS[type];
-  if(!chain)return;
+  const chain=CHAIN_MAPS[type];if(!chain)return;
   document.getElementById('chainTrigger').textContent=chain.trigger;
-  document.getElementById('chainGrid').innerHTML=chain.items.map(item=>`
-    <div class="chain-item">
-      <div class="chain-asset">${item.asset}</div>
-      <div class="chain-move ${item.dir==='pos'?'pos':'neg'}">${item.move}</div>
-      <div class="chain-desc">${item.desc}</div>
-    </div>
-  `).join('');
+  document.getElementById('chainGrid').innerHTML=chain.items.map(i=>`<div class="chain-item"><div class="chain-asset">${i.asset}</div><div class="chain-move ${i.dir==='pos'?'pos':'neg'}">${i.move}</div><div class="chain-desc">${i.desc}</div></div>`).join('');
   document.getElementById('chainBanner').classList.add('show');
 }
 
-function getChainForStory(story){
-  const t=(story.title+' '+story.desc).toLowerCase();
-  if(/oil|crude|brent|opec/i.test(t))return'oil';
-  if(/fed|federal reserve|rate cut|fomc/i.test(t))return'fed';
-  if(/china|yuan|beijing/i.test(t))return'china';
-  if(/interest rate|yield curve|treasury/i.test(t))return'rates';
-  if(/war|sanction|conflict|military/i.test(t))return'geopolitics';
-  return null;
-}
-
-const WHY={
-  macro:'Macro data and central bank moves reprice every asset class simultaneously. Rate changes affect borrowing costs, equity discount rates, and currency flows across all markets.',
-  equities:'Equity moves create pair trade and sector rotation opportunities. Watch for contagion into supply chains, competitors, and index rebalancing effects.',
-  credit:'Credit markets are the leading indicator for the cycle. Spread widening or covenant deterioration precedes equity stress by weeks.',
-  commodities:'Commodity moves act as a global inflation tax or relief valve. Energy costs feed through to consumer prices, transport margins, and petro-state FX within weeks.',
-  geopolitics:'Geopolitical events re-price risk premiums across EM assets, disrupt supply chains, and can freeze entire asset classes overnight via sanctions.',
-  tech:'Tech sector earnings and capex guidance move semiconductor supply chains, cloud infrastructure spend, and AI investment thesis.',
-  fx:'FX moves affect every cross-border earnings translation, EM debt servicing costs, and carry trade profitability.',
-  alts:'Alt asset flows signal institutional risk appetite. Redemption stress in private vehicles often precedes broader public market volatility.',
-};
-const CONS={
-  macro:['Bond yields likely to reprice 10-30bp depending on direction','Equity risk premium adjusts — watch growth vs. value rotation','USD move flows through to EM sovereign spreads','Commodity prices re-anchor on new rate/growth expectations'],
-  equities:['Sector ETF re-pricing expected within 24-48 hours','Supply chain and competitor names face sympathy moves','Options volatility spikes around earnings revisions','Index rebalancing may amplify moves at month-end'],
-  credit:['High yield spreads sensitive to any deterioration in fundamentals','Leveraged loan pricing adjusts on forward default expectations','CLO tranche valuations face mark-to-market pressure','Refinancing windows open or close depending on direction'],
-  commodities:['Energy costs feed through to airline, transport and chemical margins','Petro-state currencies (NOK, CAD, RUB) move in lockstep','Next month inflation print partially locked in','EM importers face balance of payments pressure'],
-  geopolitics:['Risk-off flows favor USD, JPY, gold and short-duration Treasuries','EM equities and currencies face indiscriminate selling','Supply chain disruption premium builds into sector multiples','Sanctions risk reprices counterparty exposure in financial stocks'],
-  tech:['Semiconductor supply chain re-prices on capex guidance changes','AI infrastructure spend shifts between cloud providers','Regulatory risk premium expands across mega-cap tech names','M&A activity intensifies'],
-  fx:['Carry trade positions unwind if volatility spikes','EM current account deficit nations face capital outflow pressure','Import/export competitiveness shifts hit industrial margins','Central bank FX reserve management becomes active'],
-  alts:['Liquidity premium re-prices across illiquid asset classes','NAV marks face scrutiny as public market proxies diverge','Fundraising appetite dampens across vintage years','Distribution pace from existing funds may slow'],
-};
-const ACTION={
-  macro:'Monitor yield curve for recession signals. Duration positioning via TLT or TMF. Check Fed Funds futures for rate path repricing. DXY as key macro risk gauge.',
-  equities:'Review sector exposure vs. index weight. Identify best-in-class vs. laggards for pair trades. Check options skew for dealer positioning.',
-  credit:'Monitor LCDX and CDX IG/HY for systemic stress. Review CLO tranche exposure by seniority. Check HY maturity wall for refinancing risk.',
-  commodities:'Check futures curve structure — backwardation signals supply tightness. Energy equity pairs: integrated majors vs. E&P pure plays.',
-  geopolitics:'Reduce EM exposure in affected regions. Long volatility via VIX options as hedge. Defense sector as structural long on escalation.',
-  tech:'Pair trade: cloud infrastructure longs vs. legacy hardware shorts. Monitor hyperscaler capex for AI demand read-through.',
-  fx:'Check carry trade funding costs and vol-adjusted returns. EM currency basket vs. DXY for relative value.',
-  alts:'Avoid illiquid vehicles with elevated redemption queues. Public REIT discounts to NAV as entry signal when private marks reset.',
-};
+const WHY={macro:'Macro data and central bank moves reprice every asset class simultaneously. Rate changes affect borrowing costs, equity discount rates, and currency flows across all markets.',equities:'Equity moves create pair trade and sector rotation opportunities. Watch for contagion into supply chains, competitors, and index rebalancing effects.',credit:'Credit markets are the leading indicator for the cycle. Spread widening or covenant deterioration precedes equity stress by weeks.',commodities:'Commodity moves act as a global inflation tax or relief valve. Energy costs feed through to consumer prices, transport margins, and petro-state FX within weeks.',geopolitics:'Geopolitical events re-price risk premiums across EM assets, disrupt supply chains, and can freeze entire asset classes overnight via sanctions.',tech:'Tech sector earnings and capex guidance move semiconductor supply chains, cloud infrastructure spend, and AI investment thesis.',fx:'FX moves affect every cross-border earnings translation, EM debt servicing costs, and carry trade profitability.',alts:'Alt asset flows signal institutional risk appetite. Redemption stress in private vehicles often precedes broader public market volatility.'};
+const CONS={macro:['Bond yields likely to reprice 10-30bp depending on direction','Equity risk premium adjusts — watch growth vs. value rotation','USD move flows through to EM sovereign spreads','Commodity prices re-anchor on new rate/growth expectations'],equities:['Sector ETF re-pricing expected within 24-48 hours','Supply chain and competitor names face sympathy moves','Options volatility spikes around earnings revisions','Index rebalancing may amplify moves at month-end'],credit:['High yield spreads sensitive to any deterioration in fundamentals','Leveraged loan pricing adjusts on forward default expectations','CLO tranche valuations face mark-to-market pressure','Refinancing windows open or close depending on direction'],commodities:['Energy costs feed through to airline, transport and chemical margins','Petro-state currencies (NOK, CAD, RUB) move in lockstep','Next month inflation print partially locked in','EM importers face balance of payments pressure'],geopolitics:['Risk-off flows favor USD, JPY, gold and short-duration Treasuries','EM equities and currencies face indiscriminate selling','Supply chain disruption premium builds into sector multiples','Sanctions risk reprices counterparty exposure in financial stocks'],tech:['Semiconductor supply chain re-prices on capex guidance changes','AI infrastructure spend shifts between cloud providers','Regulatory risk premium expands across mega-cap tech names','M&A activity intensifies around affected sector'],fx:['Carry trade positions unwind if volatility spikes sharply','EM current account deficit nations face capital outflow pressure','Import/export competitiveness shifts hit industrial margins','Central bank FX reserve management becomes active'],alts:['Liquidity premium re-prices across illiquid asset classes','NAV marks face scrutiny as public market proxies diverge','Fundraising appetite dampens across vintage years','Distribution pace from existing funds may slow']};
+const ACTION={macro:'Monitor yield curve for recession signals. Duration positioning via TLT or TMF. Check Fed Funds futures for rate path repricing. DXY as key macro risk gauge.',equities:'Review sector exposure vs. index weight. Identify best-in-class vs. laggards for pair trades. Check options skew for dealer positioning.',credit:'Monitor LCDX and CDX IG/HY for systemic stress. Review CLO tranche exposure by seniority. Check HY maturity wall for refinancing risk.',commodities:'Check futures curve structure — backwardation signals supply tightness. Energy equity pairs: integrated majors vs. E&P pure plays.',geopolitics:'Reduce EM exposure in affected regions. Long volatility via VIX options as hedge. Defense sector as structural long on escalation.',tech:'Pair trade: cloud infrastructure longs vs. legacy hardware shorts. Monitor hyperscaler capex for AI demand read-through.',fx:'Check carry trade funding costs and vol-adjusted returns. EM currency basket vs. DXY for relative value.',alts:'Avoid illiquid vehicles with elevated redemption queues. Public REIT discounts to NAV as entry signal when private marks reset.'};
 
 function parseRSS(xml,defCat){
   const doc=new DOMParser().parseFromString(xml,'text/xml');
-  const items=[...doc.querySelectorAll('item')].slice(0,7);
-  return items.map(item=>{
+  return[...doc.querySelectorAll('item')].slice(0,MAX_PER_FEED).map(item=>{
     const title=(item.querySelector('title')?.textContent||'').trim();
-    const desc=(item.querySelector('description')?.textContent||'').replace(/<[^>]+>/g,'').trim().slice(0,280);
+    const desc=(item.querySelector('description')?.textContent||'').replace(/<[^>]+>/g,'').trim().slice(0,300);
     const link=(item.querySelector('link')?.textContent||'').trim();
     const pub=new Date(item.querySelector('pubDate')?.textContent||Date.now());
     if(!title)return null;
     const cat=classifyCat(title,desc,defCat);
     const urg=scoreUrg(title,desc);
     const mins=Math.floor((Date.now()-pub)/60000);
+    const isNew=mins<30;
     const ago=mins<1?'just now':mins<60?`${mins}m ago`:mins<1440?`${Math.floor(mins/60)}h ago`:`${Math.floor(mins/1440)}d ago`;
-    return{id:Math.random().toString(36).slice(2),title,desc,link,cat,urg,ago,pub,
+    const chain=getChain(title,desc);
+    return{id:Math.random().toString(36).slice(2),title,desc,link,cat,urg,ago,pub,chain,isNew,importance:0,
       why:WHY[cat]||WHY.macro,cons:CONS[cat]||CONS.macro,action:ACTION[cat]||ACTION.macro,
-      chain:getChainForStory({title,desc}),
-      tags:[cat,...(urg==='BREAKING'?['breaking']:[])],
+      tags:[cat,...(urg==='BREAKING'?['breaking']:[]),...(chain?[chain]:[])],
       read:`${Math.max(2,Math.min(6,Math.ceil((title.length+desc.length)/380)))} min`};
   }).filter(Boolean);
 }
 
 async function fetchFeeds(){
-  showLoading();
-  const results=await Promise.allSettled(
-    RSS.map(f=>fetch(PROXY+encodeURIComponent(f.u))
-      .then(r=>r.json()).then(d=>parseRSS(d.contents||'',f.c)).catch(()=>[]))
-  );
-  const seen=new Set();
-  let all=[];
+  if(stories.length===0)showLoading();
+  const results=await Promise.allSettled(RSS.map(f=>fetch(PROXY+encodeURIComponent(f.u)).then(r=>r.json()).then(d=>parseRSS(d.contents||'',f.c)).catch(()=>[])));
+  const seen=new Set();let all=[];
   results.forEach(r=>{if(r.status==='fulfilled')all.push(...r.value)});
-  all=all.filter(s=>{const k=s.title.slice(0,35).toLowerCase();if(seen.has(k))return false;seen.add(k);return true});
+  all=all.filter(s=>{const k=s.title.slice(0,40).toLowerCase();if(seen.has(k))return false;seen.add(k);return true});
   const ord={BREAKING:0,HIGH:1,MEDIUM:2,LOW:3};
   all.sort((a,b)=>ord[a.urg]-ord[b.urg]||b.pub-a.pub);
+
+  // Process breaking alerts BEFORE updating stories
+  all=processBreakingAlerts(all);
+
   stories=all.length?all:fallback();
-
-  // Detect and show chain reaction
-  const chainType=detectChain(stories);
-  if(chainType)showChainReaction(chainType);
-
-  // Build morning brief
-  buildMorningBrief();
-
-  renderFeed();
-  updateBrk();
+  const ct=detectChain(stories);if(ct)showChainReaction(ct);
+  buildMorningBrief();renderFeed();updateBrk();
+  document.getElementById('lastRefresh').textContent=`Updated ${new Date().toLocaleTimeString('en-US',{hour12:false,timeZone:'UTC'})} UTC`;
+  countdown=90;
 }
 
-function fallback(){
-  return[
-    {id:'fb1',cat:'macro',urg:'HIGH',title:'Federal Reserve Officials Signal Caution on Further Rate Cuts',desc:'Fed governors indicated they need more data before adjusting monetary policy, with inflation remaining above the 2% target.',ago:'45m ago',pub:new Date(Date.now()-2700000),link:'#',why:WHY.macro,cons:CONS.macro,action:ACTION.macro,chain:'fed',tags:['macro','rates','fed'],read:'4 min'},
-    {id:'fb2',cat:'equities',urg:'MEDIUM',title:'S&P 500 Retreats as Tech Earnings Miss Elevated Expectations',desc:'Major technology companies reported mixed results, with several missing analyst guidance estimates despite beating on current quarter metrics.',ago:'1h ago',pub:new Date(Date.now()-3600000),link:'#',why:WHY.equities,cons:CONS.equities,action:ACTION.equities,chain:null,tags:['equities','tech','earnings'],read:'3 min'},
-    {id:'fb3',cat:'commodities',urg:'HIGH',title:'Oil Prices Drop Sharply on OPEC+ Production Increase Reports',desc:'Crude oil fell over 4% on reports that key OPEC+ members are discussing increasing production quotas significantly.',ago:'2h ago',pub:new Date(Date.now()-7200000),link:'#',why:WHY.commodities,cons:CONS.commodities,action:ACTION.commodities,chain:'oil',tags:['commodities','oil','opec'],read:'3 min'},
-    {id:'fb4',cat:'tech',urg:'MEDIUM',title:'AI Chip Demand Remains Robust as Hyperscalers Maintain Capex',desc:'Amazon, Microsoft and Google reaffirmed elevated capital expenditure plans for AI infrastructure.',ago:'3h ago',pub:new Date(Date.now()-10800000),link:'#',why:WHY.tech,cons:CONS.tech,action:ACTION.tech,chain:null,tags:['tech','ai','semiconductors'],read:'3 min'},
-    {id:'fb5',cat:'fx',urg:'MEDIUM',title:'Dollar Strengthens as US Economic Exceptionalism Narrative Holds',desc:'The DXY index extended gains as US economic data continued to outperform G10 peers.',ago:'4h ago',pub:new Date(Date.now()-14400000),link:'#',why:WHY.fx,cons:CONS.fx,action:ACTION.fx,chain:null,tags:['fx','dollar','macro'],read:'3 min'},
-  ];
-}
+function fallback(){return[{id:'fb1',cat:'macro',urg:'HIGH',title:'Federal Reserve Officials Signal Caution on Rate Cuts',desc:'Fed governors indicated they need more data before adjusting policy, with inflation remaining above 2% target.',ago:'45m ago',pub:new Date(Date.now()-2700000),link:'#',chain:'fed',importance:6,isNew:false,why:WHY.macro,cons:CONS.macro,action:ACTION.macro,tags:['macro','fed'],read:'4 min'},{id:'fb2',cat:'commodities',urg:'HIGH',title:'Oil Prices Drop on OPEC+ Production Increase Reports',desc:'Crude oil fell over 4% on reports that OPEC+ members are discussing increasing production quotas.',ago:'2h ago',pub:new Date(Date.now()-7200000),link:'#',chain:'oil',importance:5,isNew:false,why:WHY.commodities,cons:CONS.commodities,action:ACTION.commodities,tags:['commodities','oil'],read:'3 min'}];}
 
-// ─── MORNING BRIEF ───────────────────────────────────────────────────────────
 function buildMorningBrief(){
-  const now=new Date();
-  const h=now.getHours();
-  let session='Pre-Market';
-  if(h>=9&&h<16)session='Market Hours';
-  else if(h>=16)session='After Hours';
-  document.getElementById('briefSub').textContent=`${session} · ${now.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}`;
-
-  // Top 3 themes from breaking/high stories
-  const topStories=stories.filter(s=>s.urg==='BREAKING'||s.urg==='HIGH').slice(0,3);
-  const defaultThemes=[
-    {text:'<b>Fed uncertainty</b> — Rate path remains unclear as inflation stays sticky above 2% target'},
-    {text:'<b>Energy markets</b> — Oil volatility driven by OPEC+ supply decisions and geopolitical risk premium'},
-    {text:'<b>AI capex cycle</b> — Hyperscaler spending continues to support semiconductor demand'},
-  ];
-  const themes=topStories.length>=3?topStories.map(s=>({text:`<b>${s.cat.toUpperCase()}</b> — ${s.title.slice(0,80)}...`})):defaultThemes;
-  document.getElementById('briefThemes').innerHTML=themes.map(t=>`
-    <div class="brief-item"><span class="brief-bullet">●</span><span class="brief-text">${t.text}</span></div>
-  `).join('');
-
-  // Key events today
-  const events=[
-    {name:'US CPI Data (MoM)',time:'08:30 ET',imp:'high'},
-    {name:'Fed Speaker: Williams',time:'10:00 ET',imp:'high'},
-    {name:'EIA Crude Inventory',time:'10:30 ET',imp:'med'},
-    {name:'ECB Minutes Release',time:'07:30 ET',imp:'med'},
-    {name:'30Y Treasury Auction',time:'13:00 ET',imp:'high'},
-  ];
-  document.getElementById('briefEvents').innerHTML=events.map(e=>`
-    <div class="event-row">
-      <span class="event-name">${e.name}</span>
-      <div style="display:flex;align-items:center;gap:6px">
-        <span class="event-time">${e.time}</span>
-        <span class="event-imp ${e.imp==='high'?'imp-high':'imp-med'}">${e.imp.toUpperCase()}</span>
-      </div>
-    </div>
-  `).join('');
-
-  // Overnight moves
-  document.getElementById('briefMoves').innerHTML=`
-    <div class="brief-item"><span class="brief-bullet neg">●</span><span class="brief-text"><b>Asia:</b> Nikkei -1.2%, Hang Seng -0.8%, Shanghai flat. JPY strengthened on BoJ commentary.</span></div>
-    <div class="brief-item"><span class="brief-bullet neg">●</span><span class="brief-text"><b>Europe:</b> FTSE -0.4%, DAX -0.6%, CAC -0.5%. Energy stocks leading declines on oil weakness.</span></div>
-    <div class="brief-item"><span class="brief-bullet pos">●</span><span class="brief-text"><b>Commodities:</b> Gold +0.8% on safe haven bid. Oil -2.1% on supply concerns. Copper flat.</span></div>
-  `;
-
-  // What to watch
-  const chainType=detectChain(stories);
-  const watchItems=chainType?[
-    `<b>Chain reaction alert:</b> ${CHAIN_MAPS[chainType].trigger} — monitor all connected assets`,
-    '<b>Credit spreads:</b> Watch HY vs. IG spread widening as leading recession indicator',
-    '<b>Options market:</b> Check VIX term structure for near-term event risk pricing',
-  ]:[
-    '<b>Fed speakers:</b> Any deviation from recent messaging could reprice rate path',
-    '<b>Credit spreads:</b> Watch HY vs. IG spread widening as leading recession indicator',
-    '<b>DXY:</b> Dollar strength is the key cross-asset signal for today',
-  ];
-  document.getElementById('briefWatch').innerHTML=watchItems.map(w=>`
-    <div class="brief-item"><span class="brief-bullet" style="color:#f59e0b">●</span><span class="brief-text">${w}</span></div>
-  `).join('');
+  const now=new Date();const h=now.getHours();
+  const session=h<9?'Pre-Market':h<16?'Market Hours':'After Hours';
+  document.getElementById('briefSub').textContent=`${session} · ${now.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})} · ${stories.length} stories`;
+  const top=stories.filter(s=>s.urg==='BREAKING'||s.urg==='HIGH').slice(0,3);
+  const themes=top.length>=3?top.map(s=>({text:`<b>${s.cat.toUpperCase()}</b> — ${s.title.slice(0,90)}`})):[{text:'<b>Fed uncertainty</b> — Rate path unclear as inflation stays sticky above 2%'},{text:'<b>Energy markets</b> — Oil volatility from OPEC+ decisions and geopolitical risk premium'},{text:'<b>AI capex cycle</b> — Hyperscaler spending supports semiconductor demand'}];
+  document.getElementById('briefThemes').innerHTML=themes.map(t=>`<div class="brief-item"><span class="brief-bullet">●</span><span class="brief-text">${t.text}</span></div>`).join('');
+  document.getElementById('briefEvents').innerHTML=[{name:'US CPI Data (MoM)',time:'08:30 ET',imp:'high'},{name:'Fed Speaker: Williams',time:'10:00 ET',imp:'high'},{name:'EIA Crude Inventory',time:'10:30 ET',imp:'med'},{name:'ECB Minutes Release',time:'07:30 ET',imp:'med'},{name:'30Y Treasury Auction',time:'13:00 ET',imp:'high'}].map(e=>`<div class="event-row"><span class="event-name">${e.name}</span><div style="display:flex;align-items:center;gap:6px"><span class="event-time">${e.time}</span><span class="event-imp ${e.imp==='high'?'imp-high':'imp-med'}">${e.imp.toUpperCase()}</span></div></div>`).join('');
+  document.getElementById('briefMoves').innerHTML=`<div class="brief-item"><span class="brief-bullet neg">●</span><span class="brief-text"><b>Asia:</b> Nikkei -1.2%, Hang Seng -0.8%, Shanghai flat. JPY strengthened on BoJ commentary.</span></div><div class="brief-item"><span class="brief-bullet neg">●</span><span class="brief-text"><b>Europe:</b> FTSE -0.4%, DAX -0.6%, CAC -0.5%. Energy stocks leading declines on oil weakness.</span></div><div class="brief-item"><span class="brief-bullet pos">●</span><span class="brief-text"><b>Commodities:</b> Gold +0.8% on safe haven bid. Oil -2.1% on supply concerns. Copper flat.</span></div>`;
+  const ct=detectChain(stories);
+  document.getElementById('briefWatch').innerHTML=(ct?[`<b>Chain reaction active:</b> ${CHAIN_MAPS[ct].trigger} — monitor all connected assets above`,'<b>Credit spreads:</b> Watch HY vs. IG widening as the leading recession indicator','<b>Options market:</b> Check VIX term structure for near-term event risk pricing']:['<b>Fed speakers:</b> Any deviation from recent messaging could reprice the rate path','<b>Credit spreads:</b> Watch HY vs. IG widening as the leading recession indicator','<b>DXY:</b> Dollar strength is the key cross-asset signal to watch today']).map(w=>`<div class="brief-item"><span class="brief-bullet" style="color:#f59e0b">●</span><span class="brief-text">${w}</span></div>`).join('');
 }
 
-function toggleBrief(){
-  briefOpen=!briefOpen;
-  document.getElementById('briefPanel').className='brief-panel'+(briefOpen?' open':'');
-  document.getElementById('briefArr').textContent=briefOpen?'▾':'›';
-}
+function toggleBrief(){briefOpen=!briefOpen;document.getElementById('briefPanel').className='brief-panel'+(briefOpen?' open':'');document.getElementById('briefArr').textContent=briefOpen?'▾':'›';}
 
 function renderFeed(){
   const q=document.getElementById('srch').value.toLowerCase();
-  const fd=stories.filter(s=>{
-    if(catF!=='all'&&s.cat!==catF)return false;
-    if(urgF!=='all'&&s.urg!==urgF)return false;
-    if(q)return s.title.toLowerCase().includes(q)||(s.desc||'').toLowerCase().includes(q)||s.tags.some(t=>t.includes(q));
-    return true;
-  });
+  const fd=stories.filter(s=>{if(catF!=='all'&&s.cat!==catF)return false;if(urgF!=='all'&&s.urg!==urgF)return false;if(q)return s.title.toLowerCase().includes(q)||(s.desc||'').toLowerCase().includes(q)||s.tags.some(t=>t.includes(q));return true;});
+  const ce=document.getElementById('storyCount');
+  if(stories.length>0){
+    const brk=fd.filter(s=>s.urg==='BREAKING').length;
+    const newC=fd.filter(s=>s.isNew).length;
+    ce.innerHTML=`<span>${fd.length} stories${newC>0?` · <span style="color:#3b82f6;font-weight:700">${newC} new</span>`:''}</span>${brk>0?`<span style="color:#ef4444;font-weight:800;animation:pulse 1.5s ease-in-out infinite">🚨 ${brk} BREAKING</span>`:''}`;
+  }
   const feed=document.getElementById('feed');
-  if(!stories.length){showLoading();return}
-  if(!fd.length){feed.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-msg">No stories match — try different filters</div></div>`;return}
+  if(!stories.length){showLoading();return;}
+  if(!fd.length){feed.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-msg">No stories match</div></div>`;return;}
   feed.innerHTML=fd.map(s=>{
     const cat=CATS.find(c=>c.id===s.cat)||CATS[0];
     const urg=URGS[s.urg]||URGS.LOW;
     const open=openId===s.id;
-    const chainType=s.chain;
-    const chain=chainType?CHAIN_MAPS[chainType]:null;
-    return`<div class="card${open?' open':''}${chainType?' affects-book':''}" id="c${s.id}" onclick="toggle('${s.id}')" style="border-left:3px solid ${cat.color}">
-      ${urg.pulse?`<div class="glow" style="background:radial-gradient(circle at top right,${urg.bg}25,transparent)"></div>`:''}
-      ${chainType?`<div class="affects-badge">⛓ CHAIN REACTION ASSET</div>`:''}
+    const chain=s.chain?CHAIN_MAPS[s.chain]:null;
+    const isBreaking=s.urg==='BREAKING';
+    return`<div class="card${open?' open':''}${isBreaking?' is-breaking':''}${s.chain?' has-chain':''}" id="c${s.id}" onclick="toggle('${s.id}')" style="border-left:3px solid ${isBreaking?'#dc2626':cat.color}">
+      ${isBreaking?`<div class="glow" style="background:radial-gradient(circle at top right,rgba(220,38,38,.3),transparent)"></div>`:''}
+      ${s.chain?`<div class="chain-badge">⛓ ${CHAIN_MAPS[s.chain].trigger}</div>`:''}
       <div class="card-top">
         <div class="badges">
           <span class="urg-bdg" style="background:${urg.bg};${urg.pulse?'animation:pulse 1.5s ease-in-out infinite':''}">${urg.label}</span>
           <span class="cat-bdg" style="background:${cat.color}20;color:${cat.color}">${cat.icon} ${cat.label}</span>
+          ${s.isNew?`<span class="new-bdg">NEW</span>`:''}
+          ${s.importance>=8?`<span style="background:rgba(220,38,38,.2);color:#fca5a5;font-size:8px;font-weight:800;padding:2px 6px;border-radius:3px">⚡ HIGH IMPACT</span>`:''}
         </div>
-        <div class="card-meta"><span class="read-t">${s.read}</span><span class="ago-t" style="color:${s.urg==='BREAKING'?'#ef4444':'#475569'}">${s.ago}</span></div>
+        <div class="card-meta"><span class="read-t">${s.read}</span><span class="ago-t" style="color:${isBreaking?'#ef4444':'#475569'}">${s.ago}</span></div>
       </div>
       <h3 class="headline">${s.title}</h3>
       <div class="src-line">via <span class="src-nm">${srcName(s.link)}</span></div>
       <p class="summary">${s.desc||'Tap to read full hedge fund analysis.'}</p>
       ${open?`<div class="detail">
         <div class="dblock blue-b"><div class="d-title" style="color:#3b82f6">💡 WHY THIS MATTERS</div><div class="d-txt">${s.why}</div></div>
-        <div class="dblock red-b"><div class="d-title" style="color:#ef4444">⚡ MARKET CONSEQUENCES</div>
-          ${s.cons.map(c=>`<div class="cons-row"><span class="cbul" style="color:#ef4444">●</span><span class="d-txt">${c}</span></div>`).join('')}
-        </div>
-        ${chain?`<div class="dblock amber-b"><div class="d-title" style="color:#f59e0b">⛓ CHAIN REACTION — ${chain.trigger}</div>
-          <div class="d-txt" style="margin-bottom:8px">This story triggers a cross-asset chain reaction. Key connected moves:</div>
-          <div class="chain-detail-grid">${chain.items.map(item=>`
-            <div class="chain-detail-item">
-              <div class="cdi-asset">${item.asset}</div>
-              <div class="cdi-move ${item.dir==='pos'?'pos':'neg'}">${item.move}</div>
-              <div class="cdi-why">${item.desc}</div>
-            </div>`).join('')}
-          </div>
-        </div>`:''}
+        <div class="dblock red-b"><div class="d-title" style="color:#ef4444">⚡ MARKET CONSEQUENCES</div>${s.cons.map(c=>`<div class="cons-row"><span class="cbul" style="color:#ef4444">●</span><span class="d-txt">${c}</span></div>`).join('')}</div>
+        ${chain?`<div class="dblock amber-b"><div class="d-title" style="color:#f59e0b">⛓ CHAIN REACTION — ${chain.trigger}</div><div class="d-txt" style="margin-bottom:8px">This story triggers a cross-asset chain reaction:</div><div class="chain-detail-grid">${chain.items.map(i=>`<div class="chain-detail-item"><div class="cdi-asset">${i.asset}</div><div class="cdi-move ${i.dir==='pos'?'pos':'neg'}">${i.move}</div><div class="cdi-why">${i.desc}</div></div>`).join('')}</div></div>`:''}
         <div class="dblock grn-b"><div class="d-title" style="color:#10b981">🎯 HEDGE FUND ACTION</div><div class="d-txt">${s.action}</div></div>
         ${s.link&&s.link!=='#'?`<a class="read-link" href="${s.link}" target="_blank">→ Read full article</a>`:''}
         <div class="tags-row">${s.tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div>
@@ -592,61 +591,31 @@ function renderFeed(){
 }
 
 function srcName(link){try{const h=new URL(link).hostname.replace(/^(www\.|feeds\.)/,'');return h.split('.')[0].charAt(0).toUpperCase()+h.split('.')[0].slice(1)}catch{return'Global Wire'}}
-function showLoading(){document.getElementById('feed').innerHTML=`<div class="loading-wrap"><div class="spinner"></div><div class="load-msg">Fetching live global news…</div><div class="load-sub">Connecting to 16 wire services</div></div>`}
-function toggle(id){openId=openId===id?null:id;renderFeed();if(openId){setTimeout(()=>{const el=document.getElementById('c'+id);if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'})},60)}}
-function updateBrk(){const n=stories.filter(s=>s.urg==='BREAKING').length;document.getElementById('brkAlert').textContent=n?`${n} BREAKING ALERT${n>1?'S':''}`:''}
+function showLoading(){document.getElementById('feed').innerHTML=`<div class="loading-wrap"><div class="spinner"></div><div class="load-msg">Fetching live global news…</div><div class="load-sub">Scanning ${RSS.length} wire services for breaking alerts</div></div>`;}
+function toggle(id){openId=openId===id?null:id;renderFeed();if(openId){setTimeout(()=>{const el=document.getElementById('c'+id);if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'})},60);}}
+function updateBrk(){const n=stories.filter(s=>s.urg==='BREAKING').length;document.getElementById('brkAlert').textContent=n?`🚨 ${n} BREAKING ALERT${n>1?'S':''}`:''}
 
 function buildFilters(){
-  document.getElementById('catBtns').innerHTML=
-    `<button class="fbtn" id="ca-all" onclick="setCat('all')" style="background:rgba(59,130,246,.15);border-color:#3b82f6;color:#60a5fa">ALL SECTORS</button>`+
-    CATS.map(c=>`<button class="fbtn" id="ca-${c.id}" onclick="setCat('${c.id}')">${c.icon} ${c.label}</button>`).join('');
-  document.getElementById('urgBtns').innerHTML=
-    `<button class="ubtn" id="ua-all" onclick="setUrg('all')" style="background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.4);color:#3b82f6">ALL PRIORITY</button>`+
-    Object.entries(URGS).map(([k,v])=>`<button class="ubtn" id="ua-${k}" onclick="setUrg('${k}')">${v.label}</button>`).join('');
+  document.getElementById('catBtns').innerHTML=`<button class="fbtn" id="ca-all" onclick="setCat('all')" style="background:rgba(59,130,246,.15);border-color:#3b82f6;color:#60a5fa">ALL SECTORS</button>`+CATS.map(c=>`<button class="fbtn" id="ca-${c.id}" onclick="setCat('${c.id}')">${c.icon} ${c.label}</button>`).join('');
+  document.getElementById('urgBtns').innerHTML=`<button class="ubtn" id="ua-all" onclick="setUrg('all')" style="background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.4);color:#3b82f6">ALL PRIORITY</button>`+Object.entries(URGS).map(([k,v])=>`<button class="ubtn" id="ua-${k}" onclick="setUrg('${k}')">${v.label}</button>`).join('');
 }
-
-function setCat(id){
-  catF=id;
-  document.querySelectorAll('[id^="ca-"]').forEach(b=>{
-    const bid=b.id.slice(3);const c=CATS.find(x=>x.id===bid);
-    b.style.background=bid==='all'?(id==='all'?'rgba(59,130,246,.15)':''):(id===bid?c.color+'20':'');
-    b.style.borderColor=bid==='all'?(id==='all'?'#3b82f6':'#1e293b'):(id===bid?c.color:'#1e293b');
-    b.style.color=bid==='all'?(id==='all'?'#60a5fa':'#475569'):(id===bid?c.color:'#475569');
-  });renderFeed();
-}
-function setUrg(id){
-  urgF=id;
-  document.querySelectorAll('[id^="ua-"]').forEach(b=>{
-    const bid=b.id.slice(3);const u=URGS[bid];
-    b.style.background=bid==='all'?(id==='all'?'rgba(59,130,246,.1)':'transparent'):(id===bid?u.bg+'18':'transparent');
-    b.style.borderColor=bid==='all'?(id==='all'?'rgba(59,130,246,.4)':'rgba(30,41,59,.5)'):(id===bid?u.bg:'rgba(30,41,59,.5)');
-    b.style.color=bid==='all'?(id==='all'?'#3b82f6':'#334155'):(id===bid?u.bg:'#334155');
-  });renderFeed();
-}
-
-function buildTicker(){
-  const all=[...MKTDATA,...MKTDATA,...MKTDATA,...MKTDATA];
-  document.getElementById('ticker').innerHTML=all.map(m=>`<div class="t-item"><span class="t-sym">${m.s}</span><span class="t-val">${m.v}</span><span class="t-chg ${m.n?'neg':'pos'}">${m.c}</span></div>`).join('');
-}
-function buildSources(){
-  const show=10;
-  document.getElementById('srcTags').innerHTML=ALLSOURCES.slice(0,show).map(s=>`<span class="src-tag">${s}</span>`).join('');
-  document.getElementById('srcMore').textContent=`+${ALLSOURCES.length-show} more`;
-}
+function setCat(id){catF=id;document.querySelectorAll('[id^="ca-"]').forEach(b=>{const bid=b.id.slice(3);const c=CATS.find(x=>x.id===bid);b.style.background=bid==='all'?(id==='all'?'rgba(59,130,246,.15)':''):(id===bid?c.color+'20':'');b.style.borderColor=bid==='all'?(id==='all'?'#3b82f6':'#1e293b'):(id===bid?c.color:'#1e293b');b.style.color=bid==='all'?(id==='all'?'#60a5fa':'#475569'):(id===bid?c.color:'#475569');});renderFeed();}
+function setUrg(id){urgF=id;document.querySelectorAll('[id^="ua-"]').forEach(b=>{const bid=b.id.slice(3);const u=URGS[bid];b.style.background=bid==='all'?(id==='all'?'rgba(59,130,246,.1)':'transparent'):(id===bid?u.bg+'18':'transparent');b.style.borderColor=bid==='all'?(id==='all'?'rgba(59,130,246,.4)':'rgba(30,41,59,.5)'):(id===bid?u.bg:'rgba(30,41,59,.5)');b.style.color=bid==='all'?(id==='all'?'#3b82f6':'#334155'):(id===bid?u.bg:'#334155');});renderFeed();}
+function buildSources(){const show=10;document.getElementById('srcTags').innerHTML=ALLSOURCES.slice(0,show).map(s=>`<span class="src-tag">${s}</span>`).join('');document.getElementById('srcMore').textContent=`+${ALLSOURCES.length-show} more`;}
 function updateClock(){
   const n=new Date();
   document.getElementById('clkTime').textContent=n.toLocaleTimeString('en-US',{hour12:false,timeZone:'UTC'});
   document.getElementById('clkDate').textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});
+  countdown--;
+  if(countdown<=10){document.getElementById('refreshStatus').textContent=`🔄 Refreshing in ${countdown}s`;document.getElementById('refreshStatus').style.color='#3b82f6';}
+  else{document.getElementById('refreshStatus').textContent=`Next scan in ${countdown}s`;document.getElementById('refreshStatus').style.color='#334155';}
+  if(countdown<=0)fetchFeeds();
 }
-async function manualRefresh(){
-  const fab=document.getElementById('fab');fab.classList.add('spinning');
-  await fetchFeeds();fab.classList.remove('spinning');
-}
+async function manualRefresh(){const fab=document.getElementById('fab');fab.classList.add('spinning');await fetchFeeds();fab.classList.remove('spinning');}
 
-buildTicker();buildSources();buildFilters();updateClock();
+buildSources();buildFilters();updateClock();
 setInterval(updateClock,1000);
 fetchFeeds();
-setInterval(fetchFeeds,5*60*1000);
 </script>
 </body>
 </html>
